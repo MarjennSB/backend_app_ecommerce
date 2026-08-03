@@ -1,0 +1,10 @@
+composer install
+php artisan key:generate
+php artisan migrate:fresh --seed
+php artisan migrate:status
+php artisan 
+php artisan serve
+
+php artisan make:controller Api/ApiNombreController --resource
+
+php artisan l5-swagger:generate

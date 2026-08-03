@@ -1,0 +1,2136 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Backend App Ecommerce API",
+        "description": "Documentación de la API del Ecommerce",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Servidor Local"
+        }
+    ],
+    "paths": {
+        "/api/categorias": {
+            "get": {
+                "tags": [
+                    "Categorías"
+                ],
+                "summary": "Listar categorías",
+                "operationId": "d83beefa559df8bc1009599637619b8a",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Buscar categoría por nombre",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros por página",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorías obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Categorías"
+                ],
+                "summary": "Registrar categoría",
+                "operationId": "c29e806b29f2b22cb533d9e46c3eff17",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "BEBIDAS"
+                                    },
+                                    "descripcion": {
+                                        "type": "string",
+                                        "example": "Categoría de bebidas"
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Categoría creada correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/categorias/{id}": {
+            "put": {
+                "tags": [
+                    "Categorías"
+                ],
+                "summary": "Actualizar categoría",
+                "operationId": "a2fd3e1eabfad9955bad03b6833e10cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la categoría",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "ELECTRONICOS"
+                                    },
+                                    "descripcion": {
+                                        "type": "string",
+                                        "example": "Productos electrónicos"
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Categoría actualizada correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/clientes": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Listar clientes",
+                "description": "Obtiene una lista paginada de clientes.",
+                "operationId": "545f853b5f2b79dba8b151314762810b",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Buscar por nombres, apellidos o documento",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Crear cliente",
+                "description": "Registra una persona como cliente.",
+                "operationId": "52166d137aa700e1d3c88b9a62af9771",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "persona_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "persona_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente creado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/clientes/{id}": {
+            "put": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Actualizar cliente",
+                "description": "Actualiza la información de un cliente.",
+                "operationId": "a6dafbc8dbaa995301391d8935ce57bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del cliente",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "persona_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "persona_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente actualizado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/compras": {
+            "get": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Listar compras",
+                "description": "Obtiene una lista paginada de todas las compras. Permite buscar por número de comprobante o por el nombre/apellido del proveedor. Carga automáticamente los detalles de la compra y los datos del producto.",
+                "operationId": "4c2784a7bdae438a81f28ad03fb3bd53",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda (coincidencia parcial en número de comprobante o nombres del proveedor)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "F001"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de compras obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Registrar nueva compra",
+                "description": "Crea una compra (cabecera), registra sus múltiples productos (detalles), actualiza el stock del inventario y permite subir opcionalmente el comprobante en PDF.",
+                "operationId": "360c30262e69371afbe1e47b86db614a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "proveedor_id",
+                                    "tipo_documento_comprobante_id",
+                                    "numero_comprobante",
+                                    "costo_total",
+                                    "fecha_compra",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "proveedor_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipo_documento_comprobante_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "numero_comprobante": {
+                                        "type": "string",
+                                        "example": "F001-000456",
+                                        "maxLength": 50
+                                    },
+                                    "costo_total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1500.5
+                                    },
+                                    "fecha_compra": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-30"
+                                    },
+                                    "estado": {
+                                        "description": "0 = Inactivo, 1 = Activo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "archivo_pdf": {
+                                        "description": "Comprobante de la compra escaneado (Opcional, formato PDF)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "detalles[0][producto_id]": {
+                                        "description": "ID del primer producto",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][cantidad]": {
+                                        "description": "Cantidad comprada del primer producto",
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "detalles[0][costo_unitario]": {
+                                        "description": "Precio unitario de compra",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Compra registrada correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/compras/{id}": {
+            "post": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Actualizar compra y detalles",
+                "description": "Actualiza la cabecera de la compra, sincroniza los detalles (crea, actualiza o elimina) y recalcula automáticamente el stock de los productos. NOTA: Usa POST con _method=PUT debido a la subida de archivos.",
+                "operationId": "4cb644f514fe80885cb2594601ba66b9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la compra a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "proveedor_id",
+                                    "tipo_documento_comprobante_id",
+                                    "numero_comprobante",
+                                    "costo_total",
+                                    "fecha_compra",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "_method": {
+                                        "description": "Spoofing del método",
+                                        "type": "string",
+                                        "example": "PUT"
+                                    },
+                                    "proveedor_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipo_documento_comprobante_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "numero_comprobante": {
+                                        "type": "string",
+                                        "example": "F001-000456",
+                                        "maxLength": 50
+                                    },
+                                    "costo_total": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1800
+                                    },
+                                    "fecha_compra": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-30"
+                                    },
+                                    "estado": {
+                                        "description": "0 = Inactivo, 1 = Activo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "archivo_pdf": {
+                                        "description": "Nuevo comprobante PDF (Opcional, reemplazará al anterior)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "detalles[0][id]": {
+                                        "description": "ID del detalle si ya existe (omitir si es nuevo)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][producto_id]": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][cantidad]": {
+                                        "type": "integer",
+                                        "example": 12
+                                    },
+                                    "detalles[0][costo_unitario]": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Compra actualizada correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "404": {
+                        "description": "Compra no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/inventarios": {
+            "get": {
+                "tags": [
+                    "Inventarios"
+                ],
+                "summary": "Historial de movimientos de inventario",
+                "description": "Obtiene el registro histórico (Kardex) de todos los ingresos y salidas de productos en el e-commerce. Permite filtrar por rango de fechas y producto específico. Este módulo es de solo lectura.",
+                "operationId": "8157dbdfbfb3679ea62d386fa115b793",
+                "parameters": [
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Fecha de inicio (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-08-01"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Fecha de fin (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-08-31"
+                        }
+                    },
+                    {
+                        "name": "producto_id",
+                        "in": "query",
+                        "description": "ID de un producto específico para ver solo su historial",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Historial obtenido correctamente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/personas": {
+            "get": {
+                "tags": [
+                    "Personas"
+                ],
+                "summary": "Listar personas",
+                "description": "Obtiene una lista paginada de personas. Permite filtrar mediante un término de búsqueda y carga de forma ansiosa (eager loading) todos los catálogos relacionados.",
+                "operationId": "90c467ad608bc37bd7820a478b635ac2",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda (coincidencia parcial en nombres, apellidos o número de documento)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "PEREZ"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros a mostrar por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página de los resultados",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de personas obtenido correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado (Token inválido o expirado)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Personas"
+                ],
+                "summary": "Registrar persona",
+                "description": "Crea un nuevo registro de persona en la base de datos (puede ser cliente o proveedor).",
+                "operationId": "2f086ff8c55311b5938907cc196d5173",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo_documento_identidad_id",
+                                    "numero_documento",
+                                    "nombres",
+                                    "apellido_paterno",
+                                    "genero_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "tipo_documento_identidad_id": {
+                                        "description": "ID del tipo de documento",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "70123456",
+                                        "maxLength": 255
+                                    },
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "CARLOS ENRIQUE",
+                                        "maxLength": 255
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "MENDOZA",
+                                        "maxLength": 255
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "CASTILLO",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "carlos@correo.com",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "numero_celular": {
+                                        "type": "string",
+                                        "example": "987654321",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "example": "Av. Los Olivos 123",
+                                        "nullable": true,
+                                        "maxLength": 500
+                                    },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 15,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "distrito_id": {
+                                        "type": "integer",
+                                        "example": 14,
+                                        "nullable": true
+                                    },
+                                    "fecha_nacimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1995-08-20",
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Persona creada correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/personas/{id}": {
+            "put": {
+                "tags": [
+                    "Personas"
+                ],
+                "summary": "Actualizar persona",
+                "description": "Actualiza los datos personales, de contacto y ubicación de una persona existente.",
+                "operationId": "01988886b1ad660e830db7a0c81f670a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la persona a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo_documento_identidad_id",
+                                    "numero_documento",
+                                    "nombres",
+                                    "apellido_paterno",
+                                    "genero_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "tipo_documento_identidad_id": {
+                                        "description": "ID del tipo de documento",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "70123456",
+                                        "maxLength": 255
+                                    },
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "CARLOS ENRIQUE",
+                                        "maxLength": 255
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "MENDOZA",
+                                        "maxLength": 255
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "CASTILLO",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "carlos@correo.com",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "numero_celular": {
+                                        "type": "string",
+                                        "example": "987654321",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "example": "Av. Los Olivos 123",
+                                        "nullable": true,
+                                        "maxLength": 500
+                                    },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 15,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "distrito_id": {
+                                        "type": "integer",
+                                        "example": 14,
+                                        "nullable": true
+                                    },
+                                    "fecha_nacimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1995-08-20",
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Persona actualizada correctamente"
+                    },
+                    "404": {
+                        "description": "Persona no encontrada"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/productos": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Listar productos",
+                "description": "Obtiene una lista paginada de productos. Permite filtrar los resultados mediante un término de búsqueda (coincidencia parcial en nombre o descripción).",
+                "operationId": "5e6bd1a2ed7c9f1aad85effbc0226ec5",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda para filtrar por nombre o descripción del producto",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "laptop"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15,
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Registrar producto",
+                "description": "Crea un nuevo producto, genera automáticamente su código de barras (Code 128) y código QR, y permite subir múltiples imágenes asociadas.",
+                "operationId": "7e10455f6eedbf9625c6cfdf99043f1a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "categoria_id",
+                                    "nombre",
+                                    "descripcion",
+                                    "precio",
+                                    "cantidad",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "categoria_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Laptop HP Envy",
+                                        "maxLength": 60
+                                    },
+                                    "descripcion": {
+                                        "type": "string",
+                                        "example": "Laptop potente ideal para desarrollo de software.",
+                                        "maxLength": 100
+                                    },
+                                    "precio": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3500.5
+                                    },
+                                    "cantidad": {
+                                        "type": "integer",
+                                        "example": 15
+                                    },
+                                    "fecha_vencimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2027-12-31",
+                                        "nullable": true
+                                    },
+                                    "estado": {
+                                        "description": "1 para activo, 0 para inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "imagenes[]": {
+                                        "description": "Arreglo de imágenes del producto (jpeg, png, jpg, webp - máximo 2MB por archivo)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto creado correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al generar códigos o subir archivos"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/productos/{id}": {
+            "post": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Actualizar producto",
+                "description": "Actualiza los datos de un producto. Permite subir nuevas imágenes y/o eliminar imágenes existentes. NOTA: Debido al envío de archivos, se usa POST con el campo _method=PUT.",
+                "operationId": "0f890d7269e8901b1fc8fddc12f33ad9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del producto a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "categoria_id",
+                                    "nombre",
+                                    "descripcion",
+                                    "precio",
+                                    "cantidad",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "_method": {
+                                        "description": "Spoofing del método para que Laravel procese las imágenes correctamente",
+                                        "type": "string",
+                                        "example": "PUT"
+                                    },
+                                    "categoria_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Laptop HP Envy Editado",
+                                        "maxLength": 60
+                                    },
+                                    "descripcion": {
+                                        "type": "string",
+                                        "example": "Laptop potente ideal para desarrollo de software (Actualizado).",
+                                        "maxLength": 100
+                                    },
+                                    "precio": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3600.5
+                                    },
+                                    "cantidad": {
+                                        "type": "integer",
+                                        "example": 18
+                                    },
+                                    "fecha_vencimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2027-12-31",
+                                        "nullable": true
+                                    },
+                                    "estado": {
+                                        "description": "1 para activo, 0 para inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "imagenes[]": {
+                                        "description": "Arreglo de NUEVAS imágenes a agregar (jpeg, png, jpg, webp - max 2MB)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    },
+                                    "imagenes_eliminar[]": {
+                                        "description": "Arreglo con los IDs de las imágenes existentes que se desean eliminar de la base de datos y del servidor",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al actualizar o manejar archivos"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/proveedores": {
+            "get": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Listar proveedores",
+                "description": "Obtiene una lista paginada de proveedores.",
+                "operationId": "230e3fb06f82dcd54f1f6bd31490e64b",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Buscar por nombres, apellidos o documento",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de proveedores"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Crear proveedor",
+                "description": "Registra una persona como proveedor.",
+                "operationId": "7fc2efaec4fd5dc6b0e97d559bcc61c0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "persona_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "persona_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Proveedor creado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/proveedores/{id}": {
+            "put": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Actualizar proveedor",
+                "description": "Actualiza la información de un proveedor.",
+                "operationId": "b9db566393d0d6081485e35e10757651",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "persona_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "persona_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Proveedor actualizado correctamente"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/transacciones": {
+            "get": {
+                "tags": [
+                    "Transacciones"
+                ],
+                "summary": "Listar historial de flujo de caja",
+                "description": "Obtiene una lista paginada de todas las transacciones de dinero (ingresos por ventas y salidas por compras). Permite filtrar por fechas, buscar por motivo/comprobante y filtrar por tipo de transacción.",
+                "operationId": "c81c81f385db98a233108d160caa2772",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda (coincidencia parcial en el motivo o número de comprobante)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "B001"
+                        }
+                    },
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Fecha de inicio (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Fecha de fin (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "tipo_transaccion_id",
+                        "in": "query",
+                        "description": "ID del tipo de transacción (ej. filtrar solo ingresos o solo egresos)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de transacciones obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/usuarios": {
+            "get": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Listar usuarios",
+                "operationId": "bca879139983b5473f1496d463bf8898",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Buscar usuario por nombres, apellidos, documento o login",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Registrar usuario",
+                "description": "Crea un nuevo usuario con información personal, rol y fotografía opcional.",
+                "operationId": "09deba8429b4e840663c18afd37afc98",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nombres",
+                                    "apellido_paterno",
+                                    "password",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "JUAN"
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "PEREZ"
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "GOMEZ",
+                                        "nullable": true
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@correo.com",
+                                        "nullable": true
+                                    },
+                                    "tipo_documento_identidad_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "12345678",
+                                        "nullable": true
+                                    },
+                                    "login": {
+                                        "type": "string",
+                                        "example": "jperez",
+                                        "nullable": true
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123456"
+                                    },
+                                    "rol_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "profile_photo_path": {
+                                        "description": "Imagen del usuario (jpg, jpeg, png, webp máximo 2MB)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "estado": {
+                                        "description": "Estado del usuario: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario creado correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/usuarios/{id}": {
+            "post": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Actualizar usuario",
+                "description": "Actualiza la información personal, rol y fotografía opcional de un usuario.",
+                "operationId": "53b3bb1b432f43ab524b8dd60ee66671",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nombres",
+                                    "apellido_paterno",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "_method": {
+                                        "description": "Spoofing del método para que Laravel procese la imagen correctamente",
+                                        "type": "string",
+                                        "example": "PUT"
+                                    },
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "test"
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "test"
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "test",
+                                        "nullable": true
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jua321321@correo.com",
+                                        "nullable": true
+                                    },
+                                    "tipo_documento_identidad_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "12345678",
+                                        "nullable": true
+                                    },
+                                    "login": {
+                                        "type": "string",
+                                        "example": "test123",
+                                        "nullable": true
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123456",
+                                        "nullable": true
+                                    },
+                                    "rol_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "profile_photo_path": {
+                                        "description": "Nueva imagen del usuario (jpg, jpeg, png, webp máximo 2MB)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "estado": {
+                                        "description": "Estado del usuario: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/ventas": {
+            "get": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Listar ventas",
+                "description": "Obtiene una lista paginada de todas las ventas. Permite buscar por número de comprobante o por el nombre/apellido/documento del cliente. Carga automáticamente los detalles, cliente y método de pago.",
+                "operationId": "28e00259e45dbb56baba7b6c824b1172",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda (coincidencia parcial en número de comprobante o nombres del cliente)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "F002"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de ventas obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Registrar nueva venta",
+                "description": "Crea una venta validando previamente que exista stock suficiente. El backend calcula automáticamente los subtotales y el precio total de la venta.",
+                "operationId": "afc231fd04cbbe5925769fc504255d5c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "cliente_id",
+                                    "tipo_documento_comprobante_id",
+                                    "tipo_metodo_pago_id",
+                                    "numero_comprobante",
+                                    "fecha_venta",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "cliente_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipo_documento_comprobante_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipo_metodo_pago_id": {
+                                        "description": "ID del método de pago (Efectivo, Tarjeta, etc.)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "numero_comprobante": {
+                                        "type": "string",
+                                        "example": "B001-000456",
+                                        "maxLength": 20
+                                    },
+                                    "fecha_venta": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-30"
+                                    },
+                                    "estado": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "archivo_pdf": {
+                                        "description": "Comprobante escaneado (Opcional)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "detalles[0][producto_id]": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][cantidad]": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "detalles[0][precio_unitario]": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Venta registrada correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación o stock insuficiente"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/ventas/{id}": {
+            "post": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Actualizar venta y detalles",
+                "description": "Actualiza la venta recalculando los totales y ajustando el stock de inventario. Valida el stock antes de realizar cualquier cambio. NOTA: Usa POST con _method=PUT.",
+                "operationId": "85efb730dc061a45067a4c16bd4125f0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la venta a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "cliente_id",
+                                    "tipo_documento_comprobante_id",
+                                    "tipo_metodo_pago_id",
+                                    "numero_comprobante",
+                                    "fecha_venta",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "_method": {
+                                        "type": "string",
+                                        "example": "PUT"
+                                    },
+                                    "cliente_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipo_documento_comprobante_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipo_metodo_pago_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "numero_comprobante": {
+                                        "type": "string",
+                                        "example": "B001-000456",
+                                        "maxLength": 20
+                                    },
+                                    "fecha_venta": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-07-30"
+                                    },
+                                    "estado": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "archivo_pdf": {
+                                        "description": "Reemplazar PDF (Opcional)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "detalles[0][id]": {
+                                        "description": "ID del detalle (omitir si es nuevo)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][producto_id]": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][cantidad]": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "detalles[0][precio_unitario]": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Venta actualizada correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación o stock"
+                    },
+                    "404": {
+                        "description": "Venta no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Iniciar sesión",
+                "operationId": "8dcb70df1020986038d098cc08d05dae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token generado correctamente"
+                    },
+                    "401": {
+                        "description": "Credenciales no válidas"
+                    },
+                    "500": {
+                        "description": "Error al procesar el token"
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Obtener usuario autenticado",
+                "operationId": "b9abb1a7a74670a19c215c2c133f14d8",
+                "responses": {
+                    "200": {
+                        "description": "Información del usuario"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Invalida el token JWT del usuario autenticado.",
+                "operationId": "69281b12abb272c76871f19cb17ca563",
+                "responses": {
+                    "200": {
+                        "description": "Sesión cerrada correctamente"
+                    },
+                    "401": {
+                        "description": "Token inválido o no autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Renovar token",
+                "description": "Genera un nuevo token JWT para el usuario autenticado.",
+                "operationId": "b2eae7a8032954d25b46c7ec6f489c68",
+                "responses": {
+                    "200": {
+                        "description": "Nuevo token generado correctamente"
+                    },
+                    "401": {
+                        "description": "Token inválido o expirado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Ingrese el token JWT con el formato: Bearer {token}",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Categorías",
+            "description": "Categorías"
+        },
+        {
+            "name": "Clientes",
+            "description": "Clientes"
+        },
+        {
+            "name": "Compras",
+            "description": "Compras"
+        },
+        {
+            "name": "Inventarios",
+            "description": "Inventarios"
+        },
+        {
+            "name": "Personas",
+            "description": "Personas"
+        },
+        {
+            "name": "Productos",
+            "description": "Productos"
+        },
+        {
+            "name": "Proveedores",
+            "description": "Proveedores"
+        },
+        {
+            "name": "Transacciones",
+            "description": "Transacciones"
+        },
+        {
+            "name": "Usuarios",
+            "description": "Usuarios"
+        },
+        {
+            "name": "Ventas",
+            "description": "Ventas"
+        },
+        {
+            "name": "Autenticación",
+            "description": "Autenticación"
+        }
+    ]
+}
