@@ -10,22 +10,22 @@ class UsuarioResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                          => $this->id,
-            'nombres'                     => $this->nombres,
-            'apellido_paterno'            => $this->apellido_paterno,
-            'apellido_materno'            => $this->apellido_materno,
-            'correo'                      => $this->correo,
-            'tipo_documento_identidad_id' => $this->tipo_documento_identidad_id,
-            'tipo_documento_identidad'    => $this->tipoDocumentoIdentidad?->nombre,
-            'numero_documento'            => $this->numero_documento,
-            'login'                       => $this->login,
-            'estado'                      => $this->estado,
-            'rol_id'                      => $this->roles->first()?->id,
-            'rol_nombre'                  => $this->roles->first()?->name,
-            'genero_id'                   => $this->genero_id,
-            'genero_nombre'               => $this->genero?->nombre,
-            'profile_photo_path'          => $this->profile_photo_path,
-            'created_at'                  => $this->created_at?->format('Y-m-d H:i:s'),
+            'id'                => $this->id,
+            'correo'            => $this->correo,
+            'email_verified_at' => $this->email_verified_at?->format('Y-m-d H:i:s'),
+            'login'             => $this->login,
+
+            'persona_id'        => $this->persona_id,
+            'persona_nombre'    => $this->persona?->nombres,
+            'persona_apellido_paterno' => $this->persona?->apellido_paterno,
+            'persona_apellido_materno' => $this->persona?->apellido_materno,
+
+            'rol_id'            => $this->rol_id,
+            'rol_nombre'       => $this->roles->first()?->name,
+
+            'estado'            => $this->estado,
+            'created_at'        => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at'        => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

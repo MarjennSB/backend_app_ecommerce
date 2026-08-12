@@ -19,6 +19,15 @@ use App\Models\TipoTransaccion;
 
 class ApiMasterController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('jwt.auth');
+        $this->middleware('can:listar_master')->only('index');
+        $this->middleware('can:registrar_master')->only('store');
+        $this->middleware('can:editar_master')->only('update');
+        /* $this->middleware('can:eliminar_master')->only('destroy'); */
+    }
+    
     public function selectTipoDocumento()
     {
         $tipodocumentoidentidad = TipoDocumentoIdentidad::where('estado', true)

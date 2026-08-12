@@ -12,6 +12,7 @@ class CategoriaResource extends JsonResource
         return [
             'id'                          => $this->id,
             'nombre'                      => $this->nombre,
+            'slug'                        => $this->slug,
             'descripcion'                 => $this->descripcion,
             'estado'                      => $this->estado,
             'created_at'                  => $this->created_at?->format('Y-m-d H:i:s'),

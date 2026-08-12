@@ -13,10 +13,10 @@ class ApiRoleController extends Controller
     {
         $this->middleware('jwt.auth');
         $this->middleware('can:listar_rol')->only('index');
-        $this->middleware('can:editar_rol')->only('edit', 'update');
-        $this->middleware('can:registrar_rol')->only('create', 'store');
-        $this->middleware('can:listar_rol')->only('show');
-        $this->middleware('can:eliminar_rol')->only('destroy');
+        $this->middleware('can:registrar_rol')->only('store');
+        $this->middleware('can:ver_rol')->only('show');
+        $this->middleware('can:editar_rol')->only('update');
+        /* $this->middleware('can:eliminar_rol')->only('destroy'); */
     }
 
     /**

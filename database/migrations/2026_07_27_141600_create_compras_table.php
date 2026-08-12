@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('proveedor_id')->references('id')->on('proveedores');
             $table->unsignedBigInteger('usuario_id')->nullable();
             $table->foreign('usuario_id')->references('id')->on('usuarios');
+            
             $table->unsignedBigInteger('tipo_documento_comprobante_id')->nullable();
             $table->foreign('tipo_documento_comprobante_id')->references('id')->on('tipo_documento_comprobantes');
             $table->string('numero_comprobante')->nullable();
@@ -29,13 +30,6 @@ return new class extends Migration
         });
     }
 
-
-    /* $table->unsignedBigInteger('provincia_id')->nullable();
-            $table->foreign('provincia_id')->references('id')->on('provincias');
-  */
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('compras');

@@ -16,11 +16,11 @@ class ApiCategoriaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('jwt.auth');
+        $this->middleware('jwt.auth')->except(['index', 'show']);
         $this->middleware('can:listar_categoria')->only('index');
         $this->middleware('can:registrar_categoria')->only('store');
         $this->middleware('can:editar_categoria')->only('update');
-        $this->middleware('can:eliminar_categoria')->only('destroy');
+        /* $this->middleware('can:eliminar_categoria')->only('destroy'); */
     }
 
     #[OA\Get(
@@ -79,49 +79,99 @@ class ApiCategoriaController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: '/api/categorias/{slug}',
+        summary: 'Obtener detalle de una categoría por slug',
+        description: 'Obtiene la información de la categoría por su slug (pública).',
+        tags: ['Categorías'],
+        parameters: [
+            new OA\Parameter(
+                name: 'slug',
+                in: 'path',
+                required: true,
+                description: 'Slug único de la categoría',
+                schema: new OA\Schema(type: 'string', example: 'bebidas')
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Categoría encontrada'),
+            new OA\Response(response: 404, description: 'Categoría no encontrada')
+        ]
+    )]
+    public function show(Categoria $categoria)
+    {
+        return CategoriaResource::make($categoria);
+    }
+
     #[OA\Post(
         path: '/api/categorias',
         summary: 'Registrar categoría',
+        description: 'Crea una nueva categoría.',
         tags: ['Categorías'],
         security: [['bearerAuth' => []]],
+
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['nombre','estado'],
+                required: [
+                    'nombre',
+                    'slug',
+                    'estado'
+                ],
                 properties: [
+
                     new OA\Property(
                         property: 'nombre',
                         type: 'string',
-                        example: 'BEBIDAS'
+                        example: 'BEBIDAS',
+                        description: 'Nombre de la categoría'
                     ),
+
+                    new OA\Property(
+                        property: 'slug',
+                        type: 'string',
+                        example: 'bebidas',
+                        description: 'Slug único de la categoría'
+                    ),
+
                     new OA\Property(
                         property: 'descripcion',
                         type: 'string',
-                        example: 'Categoría de bebidas'
+                        nullable: true,
+                        example: 'Categoría de bebidas',
+                        description: 'Descripción de la categoría'
                     ),
+
                     new OA\Property(
                         property: 'estado',
-                        type: 'boolean',
-                        example: true
+                        type: 'integer',
+                        enum: [0, 1],
+                        example: 1,
+                        description: 'Estado de la categoría: 1 activo, 0 inactivo'
                     )
                 ]
             )
         ),
+
         responses: [
+
             new OA\Response(
                 response: 200,
                 description: 'Categoría creada correctamente'
             ),
+
             new OA\Response(
                 response: 422,
                 description: 'Error de validación'
             ),
+
             new OA\Response(
                 response: 401,
                 description: 'No autorizado'
             )
         ]
     )]
+
 
     public function store(Request $request)
     {
@@ -134,12 +184,16 @@ class ApiCategoriaController extends Controller
         try {
             $request->validate([
                 'nombre'           => ['required', 'string', 'max:100', 'unique:categorias,nombre'],
+                'slug'              => ['required', 'string', 'max:200', 'unique:categorias,slug'],
                 'descripcion'        => ['nullable', 'string', 'max:300'],
                 'estado'           => ['required', 'boolean'],
             ], [
                     'nombre.required'              => 'El nombre es obligatorio.',
                     'nombre.max'                   => 'El nombre no debe superar los 100 caracteres.',               
                     'nombre.unique'                => 'Ya existe una categoría con ese nombre.',
+                    'slug.required'              => 'El slug de la categoría es obligatorio.', 
+                    'slug.max'                   => 'El slug no puede superar los 200 caracteres.', 
+                    'slug.unique'                   => 'Ese slug ya está en uso.',
                     'descripcion.max'              => 'La descripción no debe superar los 300 caracteres.',
                     'estado.required'              => 'El estado es obligatorio.',
                     'estado.boolean'               => 'El estado debe ser verdadero o falso.',
@@ -153,6 +207,7 @@ class ApiCategoriaController extends Controller
 
         $categoria = new Categoria();
         $categoria->nombre           = $request->nombre;
+        $categoria->slug             = $request->slug;
         $categoria->descripcion        = $request->descripcion;
         $categoria->estado           = $request->estado;
         $categoria->save();
@@ -165,51 +220,85 @@ class ApiCategoriaController extends Controller
     }
 
     #[OA\Put(
-        path: '/api/categorias/{id}',
+        path: '/api/categorias/{categoria}',
         summary: 'Actualizar categoría',
+        description: 'Actualiza una categoría existente.',
         tags: ['Categorías'],
         security: [['bearerAuth' => []]],
+
         parameters: [
             new OA\Parameter(
-                name: 'id',
+                name: 'categoria',
                 in: 'path',
                 required: true,
                 description: 'ID de la categoría',
-                schema: new OA\Schema(type: 'integer')
+                schema: new OA\Schema(
+                    type: 'integer',
+                    example: 1
+                )
             )
         ],
+
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['nombre','estado'],
+                required: [
+                    'nombre',
+                    'slug',
+                    'estado'
+                ],
                 properties: [
+
                     new OA\Property(
                         property: 'nombre',
                         type: 'string',
-                        example: 'ELECTRONICOS'
+                        example: 'ELECTRONICOS',
+                        description: 'Nombre de la categoría'
                     ),
+
+                    new OA\Property(
+                        property: 'slug',
+                        type: 'string',
+                        example: 'electronicos',
+                        description: 'Slug único de la categoría'
+                    ),
+
                     new OA\Property(
                         property: 'descripcion',
                         type: 'string',
-                        example: 'Productos electrónicos'
+                        nullable: true,
+                        example: 'Productos electrónicos',
+                        description: 'Descripción de la categoría'
                     ),
+
                     new OA\Property(
                         property: 'estado',
-                        type: 'boolean',
-                        example: true
+                        type: 'integer',
+                        enum: [0, 1],
+                        example: 1,
+                        description: 'Estado de la categoría: 1 activo, 0 inactivo'
                     )
                 ]
             )
         ),
+
         responses: [
+
             new OA\Response(
                 response: 200,
                 description: 'Categoría actualizada correctamente'
             ),
+
+            new OA\Response(
+                response: 404,
+                description: 'Categoría no encontrada'
+            ),
+
             new OA\Response(
                 response: 422,
                 description: 'Error de validación'
             ),
+
             new OA\Response(
                 response: 401,
                 description: 'No autorizado'
@@ -219,38 +308,38 @@ class ApiCategoriaController extends Controller
 
     public function update(Request $request, Categoria $categoria)
     {
-        $request->merge([
-            'nombre' => strtoupper(trim($request->nombre))
-        ]);
         try {
             $request->validate([
-                'nombre'           => ['required', 'string', 'max:100', 'unique:categorias,nombre'],
-                'descripcion'        => ['nullable', 'string', 'max:300'],
-                'estado'           => ['required', 'boolean'],
+                'nombre'      => ['required', 'string', 'max:150'],
+                'slug'        => ['required', 'string', 'max:200', 'unique:categorias,slug,' . $categoria->id],
+                'descripcion' => ['nullable', 'string', 'max:255'],
+                'estado'      => ['required', 'boolean'],
             ], [
-                'nombre.required'              => 'El nombre es obligatorio.',
-                'nombre.max'                   => 'El nombre no debe superar los 100 caracteres.',               
-                'nombre.unique'                => 'Ya existe una categoría con ese nombre.',
-                'descripcion.max'              => 'La descripción no debe superar los 300 caracteres.',
-                'estado.required'              => 'El estado es obligatorio.',
-                'estado.boolean'               => 'El estado debe ser verdadero o falso.',
+                'nombre.required' => 'El nombre de la categoría es obligatorio.',
+                'nombre.max'      => 'El nombre de la categoría no puede superar los 150 caracteres.',
+                'slug.required'   => 'El slug de la categoría es obligatorio.',
+                'slug.max'        => 'El slug no puede superar los 200 caracteres.',
+                'slug.unique'     => 'Ese slug ya está en uso.',
+                'descripcion.max' => 'La descripción no puede superar los 255 caracteres.',
+                'estado.required' => 'El estado es obligatorio.',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'mensaje' => 'Errores de validación',
-                'errors'  => $e->errors(),
+                'errors'  => $e->errors()
             ], 422);
         }
 
-        $categoria->nombre           = strtoupper($request->nombre);
-        $categoria->descripcion        = $request->descripcion;
-        $categoria->estado           = $request->estado;
+        $categoria->nombre      = $request->nombre;
+        $categoria->slug        = $request->slug;
+        $categoria->descripcion = $request->descripcion;
+        $categoria->estado      = $request->estado;
+
         $categoria->save();
 
         return response()->json([
-            'codigo'  => 200,
-            'mensaje' => 'Categoría actualizada correctamente',
-            'categoria'    => CategoriaResource::make($categoria),
+            'mensaje'   => 'Categoría actualizada correctamente',
+            'categoria' => CategoriaResource::make($categoria),
         ], 200);
     }
 }

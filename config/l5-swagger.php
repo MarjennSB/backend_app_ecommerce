@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'enabled' => env('L5_SWAGGER_ENABLED', env('APP_ENV') !== 'production'),
+
     'default' => 'default',
     'documentations' => [
         'default' => [
@@ -65,10 +67,10 @@ return [
              * Middleware allows to prevent unexpected access to API documentation
              */
             'middleware' => [
-                'api' => [],
-                'asset' => [],
-                'docs' => [],
-                'oauth2_callback' => [],
+                'api' => ['swagger.access'],
+                'asset' => ['swagger.access'],
+                'docs' => ['swagger.access'],
+                'oauth2_callback' => ['swagger.access'],
             ],
 
             /*

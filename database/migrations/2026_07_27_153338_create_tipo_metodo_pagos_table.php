@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('tipo_metodo_pagos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->nullable();
+            
+            $table->string('nombre', 50);
             $table->string('siglas')->nullable();
+            $table->boolean('requiere_pasarela')->default(false);
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();

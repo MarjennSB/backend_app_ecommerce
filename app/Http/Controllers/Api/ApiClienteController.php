@@ -20,7 +20,7 @@ class ApiClienteController extends Controller
             $this->middleware('can:listar_cliente')->only('index');
             $this->middleware('can:registrar_cliente')->only('store');
             $this->middleware('can:editar_cliente')->only('update');
-            $this->middleware('can:eliminar_cliente')->only('destroy');
+            /* $this->middleware('can:eliminar_cliente')->only('destroy'); */
         }
 
 

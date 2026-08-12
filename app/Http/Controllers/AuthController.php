@@ -74,7 +74,7 @@ class AuthController extends Controller
     public function me()
     {
         $user = $this->guard()->user();
-
+        /* $user->load(['persona', 'rol']); */
         return response()->json([
             'estado' => true,
             'mensaje' => 'Se obtuvo la informacion exitosamente',

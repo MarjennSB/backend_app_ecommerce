@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\TipoDocumentoIdentidad;
+use Spatie\Permission\Models\Role;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Usuario extends Authenticatable implements JWTSubject
@@ -23,18 +23,10 @@ class Usuario extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'nombres',
-        'apellido_paterno',
-        'apellido_materno',
-        'tipo_documento_identidad_id',
-        'numero_documento',
         'login',
         'usuario',
-        'email',
+        'correo',
         'password',
-        'genero_id',
-        'profile_photo_path',
         'rol_id',
         'estado',
     ];
@@ -61,19 +53,20 @@ class Usuario extends Authenticatable implements JWTSubject
             'password' => 'hashed',
         ];
     }
-    public function tipoDocumentoIdentidad()
-    {
-        return $this->belongsTo(TipoDocumentoIdentidad::class, 'tipo_documento_identidad_id');
-    }
-
-    public function genero()
-    {
-        return $this->belongsTo(Genero::class, 'genero_id');
-    }
 
     public function getJWTIdentifier()
     {
         return $this->getKey();
+    }
+
+    public function persona()
+    {
+        return $this->belongsTo(Persona::class, 'persona_id');
+    }
+
+    public function rol()
+    {
+        return $this->belongsTo(Role::class, 'rol_id');
     }
 
     /**

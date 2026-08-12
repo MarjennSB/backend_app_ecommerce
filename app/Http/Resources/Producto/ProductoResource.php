@@ -11,32 +11,50 @@ class ProductoResource extends JsonResource
     {
         return [
             'id'                         => $this->id,
+
             'usuario_id'                 => $this->usuario_id,
-            'usuario_nombres'            => $this->usuario?->nombres,
-            'usuario_apellido_paterno'   => $this->usuario?->apellido_paterno,
-            'usuario_apellido_materno'   => $this->usuario?->apellido_materno,
-            'categoria_id'               => $this->categoria_id,
-            'categoria_nombre'           => $this->categoria?->nombre,
-            'nombre'                     => $this->nombre,
-            'descripcion'                => $this->descripcion,
-            'precio'                     => $this->precio,
-            'cantidad'                   => $this->cantidad,
-            'codigo_barras'              => $this->codigo_barras,
-            'codigo_qr'                  => $this->codigo_qr,
-            'fecha_vencimiento'          => $this->fecha_vencimiento,
-            'estado'                     => $this->estado,
-            // ¡AQUÍ ESTÁ LA MAGIA PARA LAS IMÁGENES!
+            'usuario_correo'           => $this->usuario?->correo,
+
+            'persona_nombre'           => $this->usuario?->persona?->nombres, 
+            'persona_apellido_paterno' => $this->usuario?->persona?->apellido_paterno, 
+            'persona_apellido_materno' => $this->usuario?->persona?->apellido_materno,
+
+            'categoria_id'              => $this->categoria_id,
+            'categoria_nombre'          => $this->categoria?->nombre,
+
+            'tipo_marca_id' => $this->tipo_marca_id,
+            'tipo_marca_nombre' => $this->tipoMarca?->nombre,
+
+            'nombre'                    => $this->nombre,
+            'slug'                      => $this->slug,
+            'descripcion_corta'         => $this->descripcion_corta,
+            'descripcion_larga'         => $this->descripcion_larga,
+
+            'precio_venta'              => $this->precio_venta,
+            'precio_oferta'             => $this->precio_oferta,
+            'precio_compra_referencial' => $this->precio_compra_referencial,
+
+            'es_destacado'              => $this->es_destacado,
+            'stock_actual'              => $this->stock_actual,
+
+            'codigo_barras'             => $this->codigo_barras,
+            'codigo_qr'                 => $this->codigo_qr,
+            'fecha_vencimiento'         => $this->fecha_vencimiento,
+
+            'estado'                    => $this->estado,
+
             'imagenes' => $this->whenLoaded('imagenes', function () {
                 return $this->imagenes->map(function ($imagen) {
                     return [
                         'id'          => $imagen->id,
-                        'ruta_imagen' => url('storage/' . $imagen->ruta_imagen), 
+                        'ruta_imagen' => url('storage/' . $imagen->ruta_imagen),
                         'estado'      => $imagen->estado,
-                        'created_at'  => $imagen->created_at?->format('Y-m-d H:i:s')
+                        'created_at'  => $imagen->created_at?->format('Y-m-d H:i:s'),
                     ];
                 });
             }),
-            'created_at'                 => $this->created_at?->format('Y-m-d H:i:s'),
+
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
         ];
     }
 }

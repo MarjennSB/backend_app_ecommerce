@@ -7,11 +7,162 @@
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000",
+            "url": "http://127.0.0.1:3001",
             "description": "Servidor Local"
         }
     ],
     "paths": {
+        "/api/carritos": {
+            "get": {
+                "tags": [
+                    "Carritos"
+                ],
+                "summary": "Listar carritos",
+                "description": "Obtiene una lista paginada de todos los carritos registrados, incluyendo la información del usuario asociado, sus detalles y los productos correspondientes.",
+                "operationId": "2b8c2ea5ad558c1f4a9391420632bb1f",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de carritos a mostrar por página.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10,
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de carritos obtenida correctamente"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": []
+            },
+            "post": {
+                "tags": [
+                    "Carritos"
+                ],
+                "summary": "Agregar producto al carrito",
+                "description": "Agrega un producto al carrito del usuario autenticado. Si el usuario no tiene un carrito, se crea automáticamente. Si el producto ya existe dentro del carrito, se suma la nueva cantidad al detalle existente; de lo contrario, se crea un nuevo detalle.",
+                "operationId": "c4adfab42904489dee1e53998d8bfd3a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "producto_id",
+                                    "cantidad"
+                                ],
+                                "properties": {
+                                    "producto_id": {
+                                        "description": "ID del producto que se desea agregar al carrito",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "cantidad": {
+                                        "description": "Cantidad del producto que se desea agregar",
+                                        "type": "integer",
+                                        "example": 2,
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto agregado al carrito correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al agregar el producto al carrito"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/carritos/{detalleCarrito}": {
+            "put": {
+                "tags": [
+                    "Carritos"
+                ],
+                "summary": "Actualizar cantidad del carrito",
+                "description": "Actualiza la cantidad de un producto dentro del carrito del usuario autenticado. El parámetro de ruta corresponde al ID del detalle del carrito.",
+                "operationId": "73e98c9504f7ac1a7c43c826e83166e3",
+                "parameters": [
+                    {
+                        "name": "detalleCarrito",
+                        "in": "path",
+                        "description": "ID del detalle del carrito que se desea actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cantidad"
+                                ],
+                                "properties": {
+                                    "cantidad": {
+                                        "description": "Nueva cantidad del producto dentro del carrito",
+                                        "type": "integer",
+                                        "example": 5,
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cantidad del producto actualizada correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "404": {
+                        "description": "El detalle del carrito no existe o no pertenece al usuario"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al actualizar la cantidad"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/categorias": {
             "get": {
                 "tags": [
@@ -59,6 +210,7 @@
                     "Categorías"
                 ],
                 "summary": "Registrar categoría",
+                "description": "Crea una nueva categoría.",
                 "operationId": "c29e806b29f2b22cb533d9e46c3eff17",
                 "requestBody": {
                     "required": true,
@@ -67,20 +219,34 @@
                             "schema": {
                                 "required": [
                                     "nombre",
+                                    "slug",
                                     "estado"
                                 ],
                                 "properties": {
                                     "nombre": {
+                                        "description": "Nombre de la categoría",
                                         "type": "string",
                                         "example": "BEBIDAS"
                                     },
-                                    "descripcion": {
+                                    "slug": {
+                                        "description": "Slug único de la categoría",
                                         "type": "string",
-                                        "example": "Categoría de bebidas"
+                                        "example": "bebidas"
+                                    },
+                                    "descripcion": {
+                                        "description": "Descripción de la categoría",
+                                        "type": "string",
+                                        "example": "Categoría de bebidas",
+                                        "nullable": true
                                     },
                                     "estado": {
-                                        "type": "boolean",
-                                        "example": true
+                                        "description": "Estado de la categoría: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -106,21 +272,53 @@
                 ]
             }
         },
-        "/api/categorias/{id}": {
+        "/api/categorias/{slug}": {
+            "get": {
+                "tags": [
+                    "Categorías"
+                ],
+                "summary": "Obtener detalle de una categoría por slug",
+                "description": "Obtiene la información de la categoría por su slug (pública).",
+                "operationId": "db8c7ac4e75e5082ed0b9bcdf3c6eec0",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Slug único de la categoría",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "bebidas"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categoría encontrada"
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada"
+                    }
+                }
+            }
+        },
+        "/api/categorias/{categoria}": {
             "put": {
                 "tags": [
                     "Categorías"
                 ],
                 "summary": "Actualizar categoría",
-                "operationId": "a2fd3e1eabfad9955bad03b6833e10cb",
+                "description": "Actualiza una categoría existente.",
+                "operationId": "19acb3e19ae71b3f3a2a12cb99bd187b",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "categoria",
                         "in": "path",
                         "description": "ID de la categoría",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
@@ -131,20 +329,34 @@
                             "schema": {
                                 "required": [
                                     "nombre",
+                                    "slug",
                                     "estado"
                                 ],
                                 "properties": {
                                     "nombre": {
+                                        "description": "Nombre de la categoría",
                                         "type": "string",
                                         "example": "ELECTRONICOS"
                                     },
-                                    "descripcion": {
+                                    "slug": {
+                                        "description": "Slug único de la categoría",
                                         "type": "string",
-                                        "example": "Productos electrónicos"
+                                        "example": "electronicos"
+                                    },
+                                    "descripcion": {
+                                        "description": "Descripción de la categoría",
+                                        "type": "string",
+                                        "example": "Productos electrónicos",
+                                        "nullable": true
                                     },
                                     "estado": {
-                                        "type": "boolean",
-                                        "example": true
+                                        "description": "Estado de la categoría: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -155,6 +367,9 @@
                 "responses": {
                     "200": {
                         "description": "Categoría actualizada correctamente"
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada"
                     },
                     "422": {
                         "description": "Error de validación"
@@ -321,26 +536,27 @@
                     "Compras"
                 ],
                 "summary": "Listar compras",
-                "description": "Obtiene una lista paginada de todas las compras. Permite buscar por número de comprobante o por el nombre/apellido del proveedor. Carga automáticamente los detalles de la compra y los datos del producto.",
+                "description": "Obtiene una lista paginada de compras. Permite buscar por número de comprobante, datos del proveedor o información de los productos incluidos en los detalles de la compra.",
                 "operationId": "4c2784a7bdae438a81f28ad03fb3bd53",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Término de búsqueda (coincidencia parcial en número de comprobante o nombres del proveedor)",
+                        "description": "Término de búsqueda por número de comprobante, nombre, apellido o documento del proveedor, nombre, slug o código de barras del producto.",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "F001"
+                            "example": "laptop"
                         }
                     },
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "description": "Cantidad de registros a mostrar por página.",
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "example": 15,
                             "default": 10
                         }
                     }
@@ -350,7 +566,7 @@
                         "description": "Lista de compras obtenida correctamente"
                     },
                     "401": {
-                        "description": "No autorizado"
+                        "description": "No autorizado - Token inválido o ausente"
                     }
                 },
                 "security": [
@@ -363,8 +579,8 @@
                 "tags": [
                     "Compras"
                 ],
-                "summary": "Registrar nueva compra",
-                "description": "Crea una compra (cabecera), registra sus múltiples productos (detalles), actualiza el stock del inventario y permite subir opcionalmente el comprobante en PDF.",
+                "summary": "Registrar compra",
+                "description": "Registra una nueva compra con sus detalles. Calcula automáticamente el costo total, actualiza el stock de los productos, registra los movimientos en el Kardex y genera una única transacción de caja asociada a la compra. Permite adjuntar opcionalmente el comprobante en formato PDF.",
                 "operationId": "360c30262e69371afbe1e47b86db614a",
                 "requestBody": {
                     "required": true,
@@ -375,36 +591,37 @@
                                     "proveedor_id",
                                     "tipo_documento_comprobante_id",
                                     "numero_comprobante",
-                                    "costo_total",
                                     "fecha_compra",
-                                    "estado"
+                                    "estado",
+                                    "detalles[0][producto_id]",
+                                    "detalles[0][cantidad]",
+                                    "detalles[0][costo_unitario]"
                                 ],
                                 "properties": {
                                     "proveedor_id": {
+                                        "description": "ID del proveedor de la compra.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "tipo_documento_comprobante_id": {
+                                        "description": "ID del tipo de documento del comprobante.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_comprobante": {
+                                        "description": "Número del comprobante de compra.",
                                         "type": "string",
-                                        "example": "F001-000456",
+                                        "example": "F001-00001234",
                                         "maxLength": 50
                                     },
-                                    "costo_total": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 1500.5
-                                    },
                                     "fecha_compra": {
+                                        "description": "Fecha en que se realizó la compra.",
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2026-07-30"
+                                        "example": "2026-08-11"
                                     },
                                     "estado": {
-                                        "description": "0 = Inactivo, 1 = Activo",
+                                        "description": "Estado de la compra: 1 activo, 0 inactivo.",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -413,25 +630,27 @@
                                         ]
                                     },
                                     "archivo_pdf": {
-                                        "description": "Comprobante de la compra escaneado (Opcional, formato PDF)",
+                                        "description": "Comprobante de compra en PDF. Máximo 5MB.",
                                         "type": "string",
                                         "format": "binary"
                                     },
                                     "detalles[0][producto_id]": {
-                                        "description": "ID del primer producto",
+                                        "description": "ID del primer producto.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "detalles[0][cantidad]": {
-                                        "description": "Cantidad comprada del primer producto",
+                                        "description": "Cantidad del primer producto.",
                                         "type": "integer",
-                                        "example": 10
+                                        "example": 10,
+                                        "minimum": 1
                                     },
                                     "detalles[0][costo_unitario]": {
-                                        "description": "Precio unitario de compra",
+                                        "description": "Costo unitario del primer producto.",
                                         "type": "number",
                                         "format": "float",
-                                        "example": 100.5
+                                        "example": 150.5,
+                                        "minimum": 0
                                     }
                                 },
                                 "type": "object"
@@ -443,11 +662,14 @@
                     "200": {
                         "description": "Compra registrada correctamente"
                     },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
                     "422": {
                         "description": "Errores de validación"
                     },
                     "500": {
-                        "description": "Error interno del servidor"
+                        "description": "Error crítico al registrar la compra"
                     }
                 },
                 "security": [
@@ -457,24 +679,24 @@
                 ]
             }
         },
-        "/api/compras/{id}": {
-            "post": {
+        "/api/compras/{compra}": {
+            "put": {
                 "tags": [
                     "Compras"
                 ],
-                "summary": "Actualizar compra y detalles",
-                "description": "Actualiza la cabecera de la compra, sincroniza los detalles (crea, actualiza o elimina) y recalcula automáticamente el stock de los productos. NOTA: Usa POST con _method=PUT debido a la subida de archivos.",
-                "operationId": "4cb644f514fe80885cb2594601ba66b9",
+                "summary": "Actualizar compra",
+                "description": "Actualiza una compra existente junto con sus detalles. Recalcula automáticamente el costo total, ajusta el stock de los productos, registra los movimientos correspondientes en el Kardex y actualiza la transacción de caja asociada. Permite reemplazar el comprobante PDF.",
+                "operationId": "1a18f45f3263b5edf87a9b74cd009138",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "compra",
                         "in": "path",
-                        "description": "ID de la compra a actualizar",
+                        "description": "ID de la compra a actualizar.",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
+                            "type": "integer"
+                        },
+                        "example": 1
                     }
                 ],
                 "requestBody": {
@@ -486,41 +708,40 @@
                                     "proveedor_id",
                                     "tipo_documento_comprobante_id",
                                     "numero_comprobante",
-                                    "costo_total",
                                     "fecha_compra",
-                                    "estado"
+                                    "estado",
+                                    "detalles"
                                 ],
                                 "properties": {
                                     "_method": {
-                                        "description": "Spoofing del método",
+                                        "description": "Laravel Method Spoofing para procesar la petición como PUT cuando se utiliza multipart/form-data.",
                                         "type": "string",
                                         "example": "PUT"
                                     },
                                     "proveedor_id": {
+                                        "description": "ID del proveedor de la compra.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "tipo_documento_comprobante_id": {
+                                        "description": "ID del tipo de documento del comprobante.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_comprobante": {
+                                        "description": "Número del comprobante de compra.",
                                         "type": "string",
-                                        "example": "F001-000456",
+                                        "example": "F001-00001234",
                                         "maxLength": 50
                                     },
-                                    "costo_total": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 1800
-                                    },
                                     "fecha_compra": {
+                                        "description": "Fecha de la compra.",
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2026-07-30"
+                                        "example": "2026-08-11"
                                     },
                                     "estado": {
-                                        "description": "0 = Inactivo, 1 = Activo",
+                                        "description": "Estado de la compra: 1 activa, 0 inactiva.",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -529,27 +750,48 @@
                                         ]
                                     },
                                     "archivo_pdf": {
-                                        "description": "Nuevo comprobante PDF (Opcional, reemplazará al anterior)",
+                                        "description": "Nuevo comprobante PDF. Si se envía, reemplaza el archivo anterior. Máximo 5MB.",
                                         "type": "string",
                                         "format": "binary"
                                     },
-                                    "detalles[0][id]": {
-                                        "description": "ID del detalle si ya existe (omitir si es nuevo)",
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "detalles[0][producto_id]": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "detalles[0][cantidad]": {
-                                        "type": "integer",
-                                        "example": 12
-                                    },
-                                    "detalles[0][costo_unitario]": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 100
+                                    "detalles": {
+                                        "description": "Detalles de la compra. Los detalles con ID existente se actualizan; los que no tengan ID se crean. Los detalles existentes que no sean enviados se eliminan.",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "producto_id",
+                                                "cantidad",
+                                                "costo_unitario"
+                                            ],
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID del detalle existente. Omitir este campo para crear un nuevo detalle.",
+                                                    "type": "integer",
+                                                    "example": 1,
+                                                    "nullable": true
+                                                },
+                                                "producto_id": {
+                                                    "description": "ID del producto.",
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "cantidad": {
+                                                    "description": "Cantidad comprada.",
+                                                    "type": "integer",
+                                                    "example": 20,
+                                                    "minimum": 1
+                                                },
+                                                "costo_unitario": {
+                                                    "description": "Costo unitario de compra.",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 150.5,
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "minItems": 1
                                     }
                                 },
                                 "type": "object"
@@ -561,14 +803,188 @@
                     "200": {
                         "description": "Compra actualizada correctamente"
                     },
-                    "422": {
-                        "description": "Errores de validación"
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
                     },
                     "404": {
                         "description": "Compra no encontrada"
                     },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
                     "500": {
-                        "description": "Error interno del servidor"
+                        "description": "Error crítico al actualizar la compra"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/favoritos": {
+            "get": {
+                "tags": [
+                    "Favoritos"
+                ],
+                "summary": "Listar favoritos",
+                "description": "Obtiene una lista paginada de los productos favoritos del usuario autenticado. Permite buscar por nombre, slug, descripción corta, descripción larga o código de barras del producto.",
+                "operationId": "5efb64d47f7a31f50d3cc2d2206b5bf3",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda por nombre, slug, descripción corta, descripción larga o código de barras del producto.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "laptop"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de favoritos a mostrar por página. Por defecto: 10.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15,
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de favoritos obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Favoritos"
+                ],
+                "summary": "Agregar producto a favoritos",
+                "description": "Agrega un producto a la lista de favoritos del usuario autenticado. El usuario se obtiene automáticamente desde el token de autenticación. No se permite registrar el mismo producto dos veces para el mismo usuario.",
+                "operationId": "6a3b14cfd5540c2e008677eb749a4cc5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "producto_id",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "producto_id": {
+                                        "description": "ID del producto que se desea agregar a favoritos.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "estado": {
+                                        "description": "Estado del favorito: 1 activo, 0 inactivo.",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto agregado a favoritos correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "422": {
+                        "description": "Errores de validación o el producto ya se encuentra en favoritos"
+                    },
+                    "500": {
+                        "description": "Error interno al agregar el producto a favoritos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/favoritos/{favorito}": {
+            "put": {
+                "tags": [
+                    "Favoritos"
+                ],
+                "summary": "Actualizar favorito",
+                "description": "Actualiza el estado de un favorito del usuario autenticado. Permite activar o desactivar un producto de la lista de favoritos.",
+                "operationId": "0fd2e65fa1be8f18ef052ba897656b11",
+                "parameters": [
+                    {
+                        "name": "favorito",
+                        "in": "path",
+                        "description": "ID del favorito a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "estado": {
+                                        "description": "Estado del favorito: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Favorito actualizado correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "404": {
+                        "description": "Favorito no encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al actualizar el favorito"
                     }
                 },
                 "security": [
@@ -583,14 +999,14 @@
                 "tags": [
                     "Inventarios"
                 ],
-                "summary": "Historial de movimientos de inventario",
-                "description": "Obtiene el registro histórico (Kardex) de todos los ingresos y salidas de productos en el e-commerce. Permite filtrar por rango de fechas y producto específico. Este módulo es de solo lectura.",
+                "summary": "Listar movimientos de inventario",
+                "description": "Obtiene el historial paginado de movimientos de inventario (Kardex). Permite filtrar por rango de fechas y por producto. Los movimientos se muestran desde el más reciente al más antiguo.",
                 "operationId": "8157dbdfbfb3679ea62d386fa115b793",
                 "parameters": [
                     {
                         "name": "fecha_inicio",
                         "in": "query",
-                        "description": "Fecha de inicio (YYYY-MM-DD)",
+                        "description": "Fecha inicial del rango de búsqueda. Se considera desde las 00:00:00.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -601,7 +1017,7 @@
                     {
                         "name": "fecha_fin",
                         "in": "query",
-                        "description": "Fecha de fin (YYYY-MM-DD)",
+                        "description": "Fecha final del rango de búsqueda. Se considera hasta las 23:59:59.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -612,7 +1028,7 @@
                     {
                         "name": "producto_id",
                         "in": "query",
-                        "description": "ID de un producto específico para ver solo su historial",
+                        "description": "ID del producto para consultar únicamente sus movimientos de inventario.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -622,16 +1038,28 @@
                     {
                         "name": "per_page",
                         "in": "query",
+                        "description": "Cantidad de movimientos por página.",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "default": 10
+                            "example": 10,
+                            "default": 10,
+                            "minimum": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Historial obtenido correctamente"
+                        "description": "Historial de movimientos obtenido correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "422": {
+                        "description": "Parámetros de consulta inválidos"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -646,47 +1074,61 @@
                 "tags": [
                     "Personas"
                 ],
-                "summary": "Listar personas",
-                "description": "Obtiene una lista paginada de personas. Permite filtrar mediante un término de búsqueda y carga de forma ansiosa (eager loading) todos los catálogos relacionados.",
+                "summary": "Listar usuarios",
+                "description": "Obtiene una lista paginada de personas con usuario asociado. Requiere token JWT de un usuario con rol Administrador.",
                 "operationId": "90c467ad608bc37bd7820a478b635ac2",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Término de búsqueda (coincidencia parcial en nombres, apellidos o número de documento)",
+                        "description": "Busca por nombres, apellidos, número de documento, correo o login del usuario.",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "PEREZ"
+                            "example": "Juan"
                         }
                     },
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Cantidad de registros a mostrar por página",
+                        "description": "Cantidad de registros por página.",
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "example": 10,
                             "default": 10
-                        }
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Número de página de los resultados",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Listado de personas obtenido correctamente"
+                        "description": "Usuarios obtenidos correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "usuarios": [],
+                                    "total": 0,
+                                    "pagination": {
+                                        "total": 0,
+                                        "current_page": 1,
+                                        "last_page": 1,
+                                        "per_page": 10,
+                                        "total_visible": 1,
+                                        "itemsPerPage": 10
+                                    }
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": "No autorizado (Token inválido o expirado)"
+                        "description": "Token JWT inválido o no enviado"
+                    },
+                    "403": {
+                        "description": "El usuario autenticado no tiene rol Administrador o no cuenta con el permiso listar_persona"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -699,8 +1141,8 @@
                 "tags": [
                     "Personas"
                 ],
-                "summary": "Registrar persona",
-                "description": "Crea un nuevo registro de persona en la base de datos (puede ser cliente o proveedor).",
+                "summary": "Registrar persona (tienda — crea también Usuario con rol Cliente)",
+                "description": "Registra una nueva persona junto con su usuario. El rol no es enviado por el cliente: cuando el registro proviene del ecommerce, el sistema asigna automáticamente el rol Cliente. Permite registrar los datos personales y las credenciales de acceso.",
                 "operationId": "2f086ff8c55311b5938907cc196d5173",
                 "requestBody": {
                     "required": true,
@@ -712,83 +1154,101 @@
                                     "numero_documento",
                                     "nombres",
                                     "apellido_paterno",
+                                    "apellido_materno",
+                                    "numero_celular",
+                                    "fecha_nacimiento",
                                     "genero_id",
-                                    "estado"
+                                    "correo",
+                                    "login",
+                                    "password",
+                                    "password_confirmation"
                                 ],
                                 "properties": {
                                     "tipo_documento_identidad_id": {
-                                        "description": "ID del tipo de documento",
+                                        "description": "ID del tipo de documento de identidad.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_documento": {
+                                        "description": "Número de documento de identidad.",
                                         "type": "string",
-                                        "example": "70123456",
-                                        "maxLength": 255
+                                        "example": "12345678",
+                                        "maxLength": 20
                                     },
                                     "nombres": {
                                         "type": "string",
-                                        "example": "CARLOS ENRIQUE",
-                                        "maxLength": 255
+                                        "example": "Juan Carlos",
+                                        "maxLength": 150
                                     },
                                     "apellido_paterno": {
                                         "type": "string",
-                                        "example": "MENDOZA",
-                                        "maxLength": 255
+                                        "example": "Pérez",
+                                        "maxLength": 100
                                     },
                                     "apellido_materno": {
                                         "type": "string",
-                                        "example": "CASTILLO",
-                                        "nullable": true,
-                                        "maxLength": 255
-                                    },
-                                    "correo": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "carlos@correo.com",
-                                        "nullable": true,
-                                        "maxLength": 255
+                                        "example": "García",
+                                        "maxLength": 100
                                     },
                                     "numero_celular": {
                                         "type": "string",
                                         "example": "987654321",
-                                        "nullable": true,
                                         "maxLength": 20
-                                    },
-                                    "direccion": {
-                                        "type": "string",
-                                        "example": "Av. Los Olivos 123",
-                                        "nullable": true,
-                                        "maxLength": 500
-                                    },
-                                    "departamento_id": {
-                                        "type": "integer",
-                                        "example": 15,
-                                        "nullable": true
                                     },
                                     "provincia_id": {
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
                                     },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "distrito_id": {
                                         "type": "integer",
-                                        "example": 14,
+                                        "example": 1,
                                         "nullable": true
                                     },
                                     "fecha_nacimiento": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "1995-08-20",
-                                        "nullable": true
+                                        "example": "1995-05-20"
                                     },
                                     "genero_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "estado": {
-                                        "type": "boolean",
-                                        "example": true
+                                    "profile_photo_path": {
+                                        "type": "string",
+                                        "example": "profiles/usuario.jpg",
+                                        "nullable": true
+                                    },
+                                    "correo": {
+                                        "description": "Correo electrónico utilizado para el acceso y comunicación.",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "cliente@example.com",
+                                        "maxLength": 150
+                                    },
+                                    "login": {
+                                        "description": "Nombre de usuario para iniciar sesión.",
+                                        "type": "string",
+                                        "example": "juanperez",
+                                        "maxLength": 100
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "Password123",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Confirmación de la contraseña.",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "Password123",
+                                        "minLength": 8
                                     }
                                 },
                                 "type": "object"
@@ -797,21 +1257,17 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Persona creada correctamente"
+                    "201": {
+                        "description": "Usuario registrado correctamente"
                     },
                     "422": {
                         "description": "Errores de validación"
                     },
-                    "401": {
-                        "description": "No autorizado"
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                "security": []
             }
         },
         "/api/personas/{id}": {
@@ -819,14 +1275,14 @@
                 "tags": [
                     "Personas"
                 ],
-                "summary": "Actualizar persona",
-                "description": "Actualiza los datos personales, de contacto y ubicación de una persona existente.",
+                "summary": "Actualizar usuario y datos personales",
+                "description": "Actualiza los datos de una persona y su usuario asociado en una sola operación. Permite actualizar las credenciales de acceso y cambiar opcionalmente la contraseña. El rol del usuario no puede modificarse mediante este endpoint.",
                 "operationId": "01988886b1ad660e830db7a0c81f670a",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID de la persona a actualizar",
+                        "description": "ID de la persona asociada al usuario que se desea actualizar.",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -844,83 +1300,113 @@
                                     "numero_documento",
                                     "nombres",
                                     "apellido_paterno",
+                                    "apellido_materno",
+                                    "numero_celular",
+                                    "fecha_nacimiento",
                                     "genero_id",
+                                    "correo",
+                                    "login",
                                     "estado"
                                 ],
                                 "properties": {
                                     "tipo_documento_identidad_id": {
-                                        "description": "ID del tipo de documento",
+                                        "description": "ID del tipo de documento de identidad.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_documento": {
+                                        "description": "Número de documento de identidad. Debe ser único.",
                                         "type": "string",
-                                        "example": "70123456",
-                                        "maxLength": 255
+                                        "example": "12345678",
+                                        "maxLength": 20
                                     },
                                     "nombres": {
                                         "type": "string",
-                                        "example": "CARLOS ENRIQUE",
-                                        "maxLength": 255
+                                        "example": "Juan Carlos",
+                                        "maxLength": 150
                                     },
                                     "apellido_paterno": {
                                         "type": "string",
-                                        "example": "MENDOZA",
-                                        "maxLength": 255
+                                        "example": "Pérez",
+                                        "maxLength": 100
                                     },
                                     "apellido_materno": {
                                         "type": "string",
-                                        "example": "CASTILLO",
-                                        "nullable": true,
-                                        "maxLength": 255
-                                    },
-                                    "correo": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "carlos@correo.com",
-                                        "nullable": true,
-                                        "maxLength": 255
+                                        "example": "García",
+                                        "maxLength": 100
                                     },
                                     "numero_celular": {
                                         "type": "string",
                                         "example": "987654321",
-                                        "nullable": true,
                                         "maxLength": 20
-                                    },
-                                    "direccion": {
-                                        "type": "string",
-                                        "example": "Av. Los Olivos 123",
-                                        "nullable": true,
-                                        "maxLength": 500
-                                    },
-                                    "departamento_id": {
-                                        "type": "integer",
-                                        "example": 15,
-                                        "nullable": true
                                     },
                                     "provincia_id": {
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
                                     },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "distrito_id": {
                                         "type": "integer",
-                                        "example": 14,
+                                        "example": 1,
                                         "nullable": true
                                     },
                                     "fecha_nacimiento": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "1995-08-20",
-                                        "nullable": true
+                                        "example": "1995-05-20"
                                     },
                                     "genero_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "profile_photo_path": {
+                                        "type": "string",
+                                        "example": "profiles/usuario.jpg",
+                                        "nullable": true,
+                                        "maxLength": 2048
+                                    },
+                                    "correo": {
+                                        "description": "Correo electrónico del usuario. Debe ser único.",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "cliente@example.com",
+                                        "maxLength": 150
+                                    },
+                                    "login": {
+                                        "description": "Nombre de usuario para iniciar sesión. Debe ser único.",
+                                        "type": "string",
+                                        "example": "juanperez",
+                                        "maxLength": 100
+                                    },
+                                    "password": {
+                                        "description": "Nueva contraseña. Es opcional; si no se envía, se conserva la contraseña actual.",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "NuevaPassword123",
+                                        "nullable": true,
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Confirmación de la nueva contraseña.",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "NuevaPassword123",
+                                        "nullable": true,
+                                        "minLength": 8
+                                    },
                                     "estado": {
-                                        "type": "boolean",
-                                        "example": true
+                                        "description": "Estado de la persona y usuario: 1 activo, 0 inactivo.",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -930,16 +1416,16 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Persona actualizada correctamente"
-                    },
-                    "404": {
-                        "description": "Persona no encontrada"
+                        "description": "Usuario actualizado correctamente"
                     },
                     "422": {
                         "description": "Errores de validación"
                     },
-                    "401": {
-                        "description": "No autorizado"
+                    "404": {
+                        "description": "Persona o usuario no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -955,13 +1441,13 @@
                     "Productos"
                 ],
                 "summary": "Listar productos",
-                "description": "Obtiene una lista paginada de productos. Permite filtrar los resultados mediante un término de búsqueda (coincidencia parcial en nombre o descripción).",
+                "description": "Obtiene una lista paginada de productos. Permite buscar por nombre, slug, marca, descripción corta, descripción larga o código de barras.",
                 "operationId": "5e6bd1a2ed7c9f1aad85effbc0226ec5",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Término de búsqueda para filtrar por nombre o descripción del producto",
+                        "description": "Término de búsqueda por nombre, slug, marca, descripción corta, descripción larga o código de barras.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -971,7 +1457,7 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "description": "Cantidad de registros a mostrar por página.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -999,7 +1485,7 @@
                     "Productos"
                 ],
                 "summary": "Registrar producto",
-                "description": "Crea un nuevo producto, genera automáticamente su código de barras (Code 128) y código QR, y permite subir múltiples imágenes asociadas.",
+                "description": "Crea un nuevo producto, genera automáticamente su código de barras y código QR, y permite subir múltiples imágenes asociadas.",
                 "operationId": "7e10455f6eedbf9625c6cfdf99043f1a",
                 "requestBody": {
                     "required": true,
@@ -1009,43 +1495,93 @@
                                 "required": [
                                     "categoria_id",
                                     "nombre",
-                                    "descripcion",
-                                    "precio",
-                                    "cantidad",
+                                    "slug",
+                                    "precio_venta",
+                                    "es_destacado",
+                                    "stock_actual",
                                     "estado"
                                 ],
                                 "properties": {
+                                    "tipo_marca_id": {
+                                        "description": "ID del tipo de marca del producto",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "categoria_id": {
+                                        "description": "ID de la categoría del producto",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "nombre": {
+                                        "description": "Nombre del producto",
                                         "type": "string",
                                         "example": "Laptop HP Envy",
-                                        "maxLength": 60
+                                        "maxLength": 150
                                     },
-                                    "descripcion": {
+                                    "slug": {
+                                        "description": "Slug único del producto",
                                         "type": "string",
-                                        "example": "Laptop potente ideal para desarrollo de software.",
-                                        "maxLength": 100
+                                        "example": "laptop-hp-envy",
+                                        "maxLength": 200
                                     },
-                                    "precio": {
+                                    "descripcion_corta": {
+                                        "description": "Descripción corta del producto",
+                                        "type": "string",
+                                        "example": "Laptop potente para desarrollo de software.",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "descripcion_larga": {
+                                        "description": "Descripción detallada del producto",
+                                        "type": "string",
+                                        "example": "Laptop de alto rendimiento ideal para programación, diseño y desarrollo de software.",
+                                        "nullable": true
+                                    },
+                                    "precio_venta": {
+                                        "description": "Precio de venta del producto",
                                         "type": "number",
                                         "format": "float",
                                         "example": 3500.5
                                     },
-                                    "cantidad": {
+                                    "precio_oferta": {
+                                        "description": "Precio de oferta del producto",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3299.9,
+                                        "nullable": true
+                                    },
+                                    "precio_compra_referencial": {
+                                        "description": "Precio de compra referencial",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 2800,
+                                        "nullable": true
+                                    },
+                                    "es_destacado": {
+                                        "description": "Indica si el producto es destacado: 1 sí, 0 no",
                                         "type": "integer",
-                                        "example": 15
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "stock_actual": {
+                                        "description": "Stock actual del producto",
+                                        "type": "integer",
+                                        "example": 15,
+                                        "minimum": 0
                                     },
                                     "fecha_vencimiento": {
+                                        "description": "Fecha de vencimiento del producto",
                                         "type": "string",
                                         "format": "date",
                                         "example": "2027-12-31",
                                         "nullable": true
                                     },
                                     "estado": {
-                                        "description": "1 para activo, 0 para inactivo",
+                                        "description": "Estado del producto: 1 activo, 0 inactivo",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -1054,12 +1590,13 @@
                                         ]
                                     },
                                     "imagenes[]": {
-                                        "description": "Arreglo de imágenes del producto (jpeg, png, jpg, webp - máximo 2MB por archivo)",
+                                        "description": "Arreglo de imágenes del producto. Formatos permitidos: JPG, JPEG, PNG y WEBP. Máximo 2MB por imagen.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
                                             "format": "binary"
-                                        }
+                                        },
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -1074,11 +1611,11 @@
                     "422": {
                         "description": "Errores de validación"
                     },
-                    "500": {
-                        "description": "Error interno al generar códigos o subir archivos"
-                    },
                     "401": {
                         "description": "No autorizado"
+                    },
+                    "500": {
+                        "description": "Error interno al generar códigos o subir archivos"
                     }
                 },
                 "security": [
@@ -1088,17 +1625,47 @@
                 ]
             }
         },
-        "/api/productos/{id}": {
+        "/api/productos/{slug}": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Obtener detalle de un producto por slug",
+                "description": "Obtiene la ficha completa de un producto por su slug (público).",
+                "operationId": "340e16f113cd64d24e51f816b61b3ca1",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Slug único del producto",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "laptop-hp-envy"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto encontrado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    }
+                }
+            }
+        },
+        "/api/productos/{producto}": {
             "post": {
                 "tags": [
                     "Productos"
                 ],
                 "summary": "Actualizar producto",
-                "description": "Actualiza los datos de un producto. Permite subir nuevas imágenes y/o eliminar imágenes existentes. NOTA: Debido al envío de archivos, se usa POST con el campo _method=PUT.",
-                "operationId": "0f890d7269e8901b1fc8fddc12f33ad9",
+                "description": "Actualiza un producto existente. Permite modificar sus datos, agregar nuevas imágenes y eliminar imágenes existentes. Debido al envío de archivos, se utiliza POST con _method=PUT.",
+                "operationId": "3d539c6cef4f6cdc30466e8a42b1753c",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "producto",
                         "in": "path",
                         "description": "ID del producto a actualizar",
                         "required": true,
@@ -1114,50 +1681,99 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
+                                    "_method",
                                     "categoria_id",
                                     "nombre",
-                                    "descripcion",
-                                    "precio",
-                                    "cantidad",
+                                    "slug",
+                                    "precio_venta",
+                                    "es_destacado",
+                                    "stock_actual",
                                     "estado"
                                 ],
                                 "properties": {
                                     "_method": {
-                                        "description": "Spoofing del método para que Laravel procese las imágenes correctamente",
+                                        "description": "Laravel Method Spoofing para procesar la petición como PUT",
                                         "type": "string",
                                         "example": "PUT"
                                     },
+                                    "tipo_marca_id": {
+                                        "description": "ID del tipo de marca del producto. Debe existir en tipo_marcas.",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "categoria_id": {
+                                        "description": "ID de la categoría del producto. Debe existir en categorias.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "nombre": {
+                                        "description": "Nombre del producto.",
                                         "type": "string",
-                                        "example": "Laptop HP Envy Editado",
-                                        "maxLength": 60
+                                        "example": "Laptop HP Envy Editada",
+                                        "maxLength": 150
                                     },
-                                    "descripcion": {
+                                    "slug": {
+                                        "description": "Slug único del producto.",
                                         "type": "string",
-                                        "example": "Laptop potente ideal para desarrollo de software (Actualizado).",
-                                        "maxLength": 100
+                                        "example": "laptop-hp-envy-editada",
+                                        "maxLength": 200
                                     },
-                                    "precio": {
+                                    "descripcion_corta": {
+                                        "type": "string",
+                                        "example": "Laptop potente para desarrollo de software.",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "descripcion_larga": {
+                                        "type": "string",
+                                        "example": "Laptop de alto rendimiento ideal para programación y diseño.",
+                                        "nullable": true
+                                    },
+                                    "precio_venta": {
+                                        "description": "Precio de venta del producto.",
                                         "type": "number",
                                         "format": "float",
                                         "example": 3600.5
                                     },
-                                    "cantidad": {
+                                    "precio_oferta": {
+                                        "description": "Precio de oferta del producto.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3400,
+                                        "nullable": true
+                                    },
+                                    "precio_compra_referencial": {
+                                        "description": "Precio de compra referencial.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 2900,
+                                        "nullable": true
+                                    },
+                                    "es_destacado": {
+                                        "description": "Indica si el producto es destacado: 1 sí, 0 no.",
                                         "type": "integer",
-                                        "example": 18
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "stock_actual": {
+                                        "description": "Cantidad disponible del producto.",
+                                        "type": "integer",
+                                        "example": 20,
+                                        "minimum": 0
                                     },
                                     "fecha_vencimiento": {
+                                        "description": "Fecha de vencimiento del producto.",
                                         "type": "string",
                                         "format": "date",
                                         "example": "2027-12-31",
                                         "nullable": true
                                     },
                                     "estado": {
-                                        "description": "1 para activo, 0 para inactivo",
+                                        "description": "Estado del producto: 1 activo, 0 inactivo.",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -1166,20 +1782,22 @@
                                         ]
                                     },
                                     "imagenes[]": {
-                                        "description": "Arreglo de NUEVAS imágenes a agregar (jpeg, png, jpg, webp - max 2MB)",
+                                        "description": "Nuevas imágenes que se agregarán al producto. Formatos permitidos: JPG, JPEG, PNG y WEBP. Máximo 2MB por imagen.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
                                             "format": "binary"
-                                        }
+                                        },
+                                        "nullable": true
                                     },
                                     "imagenes_eliminar[]": {
-                                        "description": "Arreglo con los IDs de las imágenes existentes que se desean eliminar de la base de datos y del servidor",
+                                        "description": "IDs de las imágenes existentes que se desean eliminar de la base de datos y del servidor.",
                                         "type": "array",
                                         "items": {
                                             "type": "integer",
-                                            "example": 5
-                                        }
+                                            "example": 1
+                                        },
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -1197,11 +1815,11 @@
                     "422": {
                         "description": "Errores de validación"
                     },
-                    "500": {
-                        "description": "Error interno al actualizar o manejar archivos"
-                    },
                     "401": {
-                        "description": "No autorizado"
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "500": {
+                        "description": "Error interno al actualizar producto o manejar archivos"
                     }
                 },
                 "security": [
@@ -1356,71 +1974,287 @@
                 ]
             }
         },
-        "/api/transacciones": {
+        "/api/resenas": {
             "get": {
                 "tags": [
-                    "Transacciones"
+                    "Reseñas"
                 ],
-                "summary": "Listar historial de flujo de caja",
-                "description": "Obtiene una lista paginada de todas las transacciones de dinero (ingresos por ventas y salidas por compras). Permite filtrar por fechas, buscar por motivo/comprobante y filtrar por tipo de transacción.",
-                "operationId": "c81c81f385db98a233108d160caa2772",
+                "summary": "Listar reseñas",
+                "description": "Obtiene una lista paginada de reseñas. Permite buscar por comentario, nombre o slug del producto, correo del usuario y nombre o apellidos de la persona.",
+                "operationId": "5c14bce70743682aff2935dd3cf2e014",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Término de búsqueda (coincidencia parcial en el motivo o número de comprobante)",
+                        "description": "Término de búsqueda por comentario, nombre del producto, slug, correo del usuario, nombres o apellidos de la persona.",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "B001"
-                        }
-                    },
-                    {
-                        "name": "fecha_inicio",
-                        "in": "query",
-                        "description": "Fecha de inicio (YYYY-MM-DD)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date"
-                        }
-                    },
-                    {
-                        "name": "fecha_fin",
-                        "in": "query",
-                        "description": "Fecha de fin (YYYY-MM-DD)",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "format": "date"
-                        }
-                    },
-                    {
-                        "name": "tipo_transaccion_id",
-                        "in": "query",
-                        "description": "ID del tipo de transacción (ej. filtrar solo ingresos o solo egresos)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
+                            "example": "laptop"
                         }
                     },
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "description": "Cantidad de registros a mostrar por página (por defecto: 10).",
                         "required": false,
                         "schema": {
                             "type": "integer",
+                            "example": 15,
                             "default": 10
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista de transacciones obtenida correctamente"
+                        "description": "Lista de reseñas obtenida correctamente"
                     },
                     "401": {
-                        "description": "No autorizado"
+                        "description": "No autorizado - Token inválido o ausente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Reseñas"
+                ],
+                "summary": "Registrar reseña",
+                "description": "Registra una nueva reseña asociada al usuario autenticado y a un producto. La calificación debe estar entre 1 y 5.",
+                "operationId": "13e0811d25830977db99016dd134528e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "producto_id",
+                                    "calificacion",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "producto_id": {
+                                        "description": "ID del producto que se desea reseñar.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "calificacion": {
+                                        "description": "Calificación del producto. Valores permitidos del 1 al 5.",
+                                        "type": "integer",
+                                        "example": 5,
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "comentario": {
+                                        "description": "Comentario o descripción de la reseña.",
+                                        "type": "string",
+                                        "example": "Excelente producto, cumplió con mis expectativas.",
+                                        "nullable": true
+                                    },
+                                    "estado": {
+                                        "description": "Estado de la reseña: 1 activo, 0 inactivo.",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reseña creada correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al crear la reseña"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/resenas/{resena}": {
+            "put": {
+                "tags": [
+                    "Reseñas"
+                ],
+                "summary": "Actualizar reseña",
+                "description": "Actualiza una reseña existente. Permite modificar el producto, la calificación, el comentario y el estado de la reseña. El usuario asociado a la reseña no puede modificarse.",
+                "operationId": "b8735aa2e71d44f91d38dd38b55c3a2d",
+                "parameters": [
+                    {
+                        "name": "resena",
+                        "in": "path",
+                        "description": "ID de la reseña a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "producto_id",
+                                    "calificacion",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "producto_id": {
+                                        "description": "ID del producto asociado a la reseña.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "calificacion": {
+                                        "description": "Calificación del producto. Valores permitidos del 1 al 5.",
+                                        "type": "integer",
+                                        "example": 4,
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "comentario": {
+                                        "description": "Comentario o descripción de la reseña.",
+                                        "type": "string",
+                                        "example": "El producto funciona correctamente.",
+                                        "nullable": true
+                                    },
+                                    "estado": {
+                                        "description": "Estado de la reseña: 1 activo, 0 inactivo.",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reseña actualizada correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "404": {
+                        "description": "Reseña no encontrada"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "500": {
+                        "description": "Error interno al actualizar la reseña"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/transacciones": {
+            "get": {
+                "tags": [
+                    "Transacciones"
+                ],
+                "summary": "Listar transacciones",
+                "description": "Obtiene el historial paginado de transacciones financieras. Permite buscar por motivo, filtrar por rango de fechas y filtrar por tipo de transacción. Los registros se muestran desde el más reciente al más antiguo.",
+                "operationId": "c81c81f385db98a233108d160caa2772",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Término de búsqueda dentro del motivo de la transacción.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Compra"
+                        }
+                    },
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Fecha inicial del rango de búsqueda. Se considera desde las 00:00:00.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-08-01"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Fecha final del rango de búsqueda. Se considera hasta las 23:59:59.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-08-31"
+                        }
+                    },
+                    {
+                        "name": "tipo_transaccion_id",
+                        "in": "query",
+                        "description": "ID del tipo de transacción para filtrar los registros.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de transacciones que se mostrarán por página.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10,
+                            "default": 10,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transacciones obtenidas correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "422": {
+                        "description": "Parámetros de consulta inválidos"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -1436,34 +2270,40 @@
                     "Usuarios"
                 ],
                 "summary": "Listar usuarios",
+                "description": "Obtiene el listado paginado de usuarios junto con sus datos personales y rol.",
                 "operationId": "bca879139983b5473f1496d463bf8898",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Buscar usuario por nombres, apellidos, documento o login",
+                        "description": "Buscar por nombres, apellidos, número de documento, correo o login.",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Juan"
                         }
                     },
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Cantidad de registros por página",
+                        "description": "Cantidad de registros por página.",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "example": 15
+                            "example": 10,
+                            "default": 10
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista de usuarios obtenida correctamente"
+                        "description": "Usuarios obtenidos correctamente"
                     },
                     "401": {
-                        "description": "No autorizado"
+                        "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -1477,47 +2317,22 @@
                     "Usuarios"
                 ],
                 "summary": "Registrar usuario",
-                "description": "Crea un nuevo usuario con información personal, rol y fotografía opcional.",
+                "description": "Crea un nuevo usuario asociado a una persona y un rol.",
                 "operationId": "09deba8429b4e840663c18afd37afc98",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
-                                    "nombres",
-                                    "apellido_paterno",
                                     "password",
                                     "estado"
                                 ],
                                 "properties": {
-                                    "nombres": {
-                                        "type": "string",
-                                        "example": "JUAN"
-                                    },
-                                    "apellido_paterno": {
-                                        "type": "string",
-                                        "example": "PEREZ"
-                                    },
-                                    "apellido_materno": {
-                                        "type": "string",
-                                        "example": "GOMEZ",
-                                        "nullable": true
-                                    },
                                     "correo": {
                                         "type": "string",
                                         "format": "email",
                                         "example": "juan@correo.com",
-                                        "nullable": true
-                                    },
-                                    "tipo_documento_identidad_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
-                                    "numero_documento": {
-                                        "type": "string",
-                                        "example": "12345678",
                                         "nullable": true
                                     },
                                     "login": {
@@ -1530,20 +2345,14 @@
                                         "format": "password",
                                         "example": "123456"
                                     },
-                                    "rol_id": {
-                                        "type": "integer",
-                                        "example": 2,
-                                        "nullable": true
-                                    },
-                                    "genero_id": {
+                                    "persona_id": {
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
                                     },
-                                    "profile_photo_path": {
-                                        "description": "Imagen del usuario (jpg, jpeg, png, webp máximo 2MB)",
-                                        "type": "string",
-                                        "format": "binary",
+                                    "rol_id": {
+                                        "type": "integer",
+                                        "example": 2,
                                         "nullable": true
                                     },
                                     "estado": {
@@ -1580,13 +2389,13 @@
             }
         },
         "/api/usuarios/{id}": {
-            "post": {
+            "put": {
                 "tags": [
                     "Usuarios"
                 ],
                 "summary": "Actualizar usuario",
-                "description": "Actualiza la información personal, rol y fotografía opcional de un usuario.",
-                "operationId": "53b3bb1b432f43ab524b8dd60ee66671",
+                "description": "Actualiza la información de un usuario, su persona asociada y su rol.",
+                "operationId": "c855076ebb11a5ea23d90e21712f0c66",
                 "parameters": [
                     {
                         "name": "id",
@@ -1602,51 +2411,21 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
-                                    "nombres",
-                                    "apellido_paterno",
                                     "estado"
                                 ],
                                 "properties": {
-                                    "_method": {
-                                        "description": "Spoofing del método para que Laravel procese la imagen correctamente",
-                                        "type": "string",
-                                        "example": "PUT"
-                                    },
-                                    "nombres": {
-                                        "type": "string",
-                                        "example": "test"
-                                    },
-                                    "apellido_paterno": {
-                                        "type": "string",
-                                        "example": "test"
-                                    },
-                                    "apellido_materno": {
-                                        "type": "string",
-                                        "example": "test",
-                                        "nullable": true
-                                    },
                                     "correo": {
                                         "type": "string",
                                         "format": "email",
-                                        "example": "jua321321@correo.com",
-                                        "nullable": true
-                                    },
-                                    "tipo_documento_identidad_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
-                                    "numero_documento": {
-                                        "type": "string",
-                                        "example": "12345678",
+                                        "example": "juan@correo.com",
                                         "nullable": true
                                     },
                                     "login": {
                                         "type": "string",
-                                        "example": "test123",
+                                        "example": "jperez",
                                         "nullable": true
                                     },
                                     "password": {
@@ -1655,20 +2434,14 @@
                                         "example": "123456",
                                         "nullable": true
                                     },
+                                    "persona_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "rol_id": {
                                         "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
-                                    "genero_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
-                                    "profile_photo_path": {
-                                        "description": "Nueva imagen del usuario (jpg, jpeg, png, webp máximo 2MB)",
-                                        "type": "string",
-                                        "format": "binary",
+                                        "example": 2,
                                         "nullable": true
                                     },
                                     "estado": {
@@ -1713,36 +2486,44 @@
                     "Ventas"
                 ],
                 "summary": "Listar ventas",
-                "description": "Obtiene una lista paginada de todas las ventas. Permite buscar por número de comprobante o por el nombre/apellido/documento del cliente. Carga automáticamente los detalles, cliente y método de pago.",
+                "description": "Obtiene una lista paginada de ventas con la información del usuario, dirección de envío, método de pago, detalles de productos y comprobante asociado. Permite buscar por número o serie de comprobante, código de transacción de pasarela o estado de la venta.",
                 "operationId": "28e00259e45dbb56baba7b6c824b1172",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Término de búsqueda (coincidencia parcial en número de comprobante o nombres del cliente)",
+                        "description": "Término de búsqueda por número de comprobante, serie de comprobante, código de transacción de pasarela o estado de la venta.",
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "example": "F002"
+                            "example": "F001-00001"
                         }
                     },
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Cantidad de registros a mostrar por página (por defecto: 10)",
+                        "description": "Cantidad de ventas que se mostrarán por página.",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "default": 10
+                            "example": 10,
+                            "default": 10,
+                            "minimum": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista de ventas obtenida correctamente"
+                        "description": "Ventas obtenidas correctamente"
                     },
                     "401": {
-                        "description": "No autorizado"
+                        "description": "No autorizado - Token inválido o ausente"
+                    },
+                    "422": {
+                        "description": "Parámetros de consulta inválidos"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -1756,7 +2537,7 @@
                     "Ventas"
                 ],
                 "summary": "Registrar nueva venta",
-                "description": "Crea una venta validando previamente que exista stock suficiente. El backend calcula automáticamente los subtotales y el precio total de la venta.",
+                "description": "Registra una nueva venta para el usuario autenticado. Valida el stock disponible, crea la venta, sus detalles y comprobante, descuenta el stock de los productos, registra el movimiento en el Kardex y genera la transacción financiera asociada.",
                 "operationId": "afc231fd04cbbe5925769fc504255d5c",
                 "requestBody": {
                     "required": true,
@@ -1764,38 +2545,80 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "cliente_id",
-                                    "tipo_documento_comprobante_id",
+                                    "direccion_envio_id",
                                     "tipo_metodo_pago_id",
+                                    "tipo_documento_comprobante_id",
+                                    "serie_comprobante",
                                     "numero_comprobante",
                                     "fecha_venta",
-                                    "estado"
+                                    "costo_envio",
+                                    "impuestos_igv",
+                                    "estado",
+                                    "detalles"
                                 ],
                                 "properties": {
-                                    "cliente_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "tipo_documento_comprobante_id": {
+                                    "direccion_envio_id": {
+                                        "description": "ID de la dirección de envío del usuario autenticado.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "tipo_metodo_pago_id": {
-                                        "description": "ID del método de pago (Efectivo, Tarjeta, etc.)",
+                                        "description": "ID del método de pago. Ejemplo: Efectivo, Tarjeta, Yape, Plin, etc.",
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "numero_comprobante": {
+                                    "tipo_documento_comprobante_id": {
+                                        "description": "ID del tipo de documento del comprobante. Ejemplo: Factura o Boleta.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "serie_comprobante": {
+                                        "description": "Serie del comprobante de venta.",
                                         "type": "string",
-                                        "example": "B001-000456",
+                                        "example": "B001",
+                                        "maxLength": 10
+                                    },
+                                    "numero_comprobante": {
+                                        "description": "Número correlativo del comprobante.",
+                                        "type": "string",
+                                        "example": "00000456",
                                         "maxLength": 20
                                     },
+                                    "codigo_transaccion_pasarela": {
+                                        "description": "Código de transacción generado por la pasarela de pago, si corresponde.",
+                                        "type": "string",
+                                        "example": "TXN-20260811-00001",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
                                     "fecha_venta": {
+                                        "description": "Fecha en la que se realizó la venta.",
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2026-07-30"
+                                        "example": "2026-08-11"
+                                    },
+                                    "costo_envio": {
+                                        "description": "Costo de envío de la venta.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 15
+                                    },
+                                    "descuento_total": {
+                                        "description": "Descuento total aplicado a la venta.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10,
+                                        "nullable": true,
+                                        "default": 0
+                                    },
+                                    "impuestos_igv": {
+                                        "description": "Monto correspondiente al IGV de la venta.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 271.8
                                     },
                                     "estado": {
+                                        "description": "Estado del registro: 1 activo, 0 inactivo.",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -1803,23 +2626,54 @@
                                             1
                                         ]
                                     },
-                                    "archivo_pdf": {
-                                        "description": "Comprobante escaneado (Opcional)",
+                                    "archivo_pdf_xml": {
+                                        "description": "Archivo PDF o XML asociado al comprobante. Opcional. Máximo 5MB.",
                                         "type": "string",
-                                        "format": "binary"
+                                        "format": "binary",
+                                        "nullable": true
                                     },
-                                    "detalles[0][producto_id]": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "detalles[0][cantidad]": {
-                                        "type": "integer",
-                                        "example": 2
-                                    },
-                                    "detalles[0][precio_unitario]": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 150
+                                    "detalles": {
+                                        "description": "Lista de productos incluidos en la venta.",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "producto_id",
+                                                "cantidad",
+                                                "precio_unitario"
+                                            ],
+                                            "properties": {
+                                                "producto_id": {
+                                                    "description": "ID del producto.",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "description": "Cantidad de unidades a vender.",
+                                                    "type": "integer",
+                                                    "example": 2,
+                                                    "minimum": 1
+                                                },
+                                                "precio_unitario": {
+                                                    "description": "Precio unitario del producto.",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 150,
+                                                    "minimum": 0
+                                                },
+                                                "porcentaje_descuento": {
+                                                    "description": "Porcentaje de descuento aplicado al producto.",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5,
+                                                    "nullable": true,
+                                                    "default": 0,
+                                                    "maximum": 100,
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "minItems": 1
                                     }
                                 },
                                 "type": "object"
@@ -1835,7 +2689,7 @@
                         "description": "Errores de validación o stock insuficiente"
                     },
                     "500": {
-                        "description": "Error interno"
+                        "description": "Error interno al registrar la venta"
                     }
                 },
                 "security": [
@@ -1846,18 +2700,54 @@
             }
         },
         "/api/ventas/{id}": {
+            "get": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Obtener detalle de una venta por id",
+                "description": "Obtiene la información completa de una venta (protegido, requiere autenticación).",
+                "operationId": "aa69b6df33424247559a9af277a07558",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la venta",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venta encontrada"
+                    },
+                    "404": {
+                        "description": "Venta no encontrada"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Ventas"
                 ],
                 "summary": "Actualizar venta y detalles",
-                "description": "Actualiza la venta recalculando los totales y ajustando el stock de inventario. Valida el stock antes de realizar cualquier cambio. NOTA: Usa POST con _method=PUT.",
+                "description": "Actualiza una venta y sus detalles. Recalcula automáticamente el precio total, valida el stock disponible antes de modificar la información, ajusta el inventario y registra los movimientos correspondientes en el Kardex. Permite agregar, modificar o eliminar detalles y reemplazar opcionalmente el comprobante PDF. Usa POST con _method=PUT.",
                 "operationId": "85efb730dc061a45067a4c16bd4125f0",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID de la venta a actualizar",
+                        "description": "ID de la venta que se desea actualizar.",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -1876,36 +2766,44 @@
                                     "tipo_metodo_pago_id",
                                     "numero_comprobante",
                                     "fecha_venta",
-                                    "estado"
+                                    "estado",
+                                    "detalles"
                                 ],
                                 "properties": {
                                     "_method": {
+                                        "description": "Indica a Laravel que la petición corresponde a una actualización.",
                                         "type": "string",
                                         "example": "PUT"
                                     },
                                     "cliente_id": {
+                                        "description": "ID del cliente asociado a la venta.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "tipo_documento_comprobante_id": {
+                                        "description": "ID del tipo de documento del comprobante.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "tipo_metodo_pago_id": {
+                                        "description": "ID del método de pago utilizado.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_comprobante": {
+                                        "description": "Número del comprobante de la venta.",
                                         "type": "string",
                                         "example": "B001-000456",
                                         "maxLength": 20
                                     },
                                     "fecha_venta": {
+                                        "description": "Fecha en que se realizó la venta.",
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2026-07-30"
+                                        "example": "2026-08-11"
                                     },
                                     "estado": {
+                                        "description": "Estado de la venta: 1 activa, 0 inactiva.",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -1914,27 +2812,33 @@
                                         ]
                                     },
                                     "archivo_pdf": {
-                                        "description": "Reemplazar PDF (Opcional)",
+                                        "description": "Nuevo comprobante PDF. Si se envía, reemplaza el archivo anterior. Máximo 5MB.",
                                         "type": "string",
                                         "format": "binary"
                                     },
                                     "detalles[0][id]": {
-                                        "description": "ID del detalle (omitir si es nuevo)",
+                                        "description": "ID del detalle existente. Omitir este campo cuando se trate de un detalle nuevo.",
                                         "type": "integer",
-                                        "example": 1
+                                        "example": 1,
+                                        "nullable": true
                                     },
                                     "detalles[0][producto_id]": {
+                                        "description": "ID del producto.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "detalles[0][cantidad]": {
+                                        "description": "Cantidad solicitada del producto.",
                                         "type": "integer",
-                                        "example": 3
+                                        "example": 3,
+                                        "minimum": 1
                                     },
                                     "detalles[0][precio_unitario]": {
+                                        "description": "Precio unitario del producto.",
                                         "type": "number",
                                         "format": "float",
-                                        "example": 150
+                                        "example": 150,
+                                        "minimum": 0
                                     }
                                 },
                                 "type": "object"
@@ -1946,14 +2850,14 @@
                     "200": {
                         "description": "Venta actualizada correctamente"
                     },
-                    "422": {
-                        "description": "Errores de validación o stock"
-                    },
                     "404": {
                         "description": "Venta no encontrada"
                     },
+                    "422": {
+                        "description": "Errores de validación o stock insuficiente"
+                    },
                     "500": {
-                        "description": "Error interno"
+                        "description": "Error interno al actualizar la venta"
                     }
                 },
                 "security": [
@@ -2089,6 +2993,10 @@
     },
     "tags": [
         {
+            "name": "Carritos",
+            "description": "Carritos"
+        },
+        {
             "name": "Categorías",
             "description": "Categorías"
         },
@@ -2099,6 +3007,10 @@
         {
             "name": "Compras",
             "description": "Compras"
+        },
+        {
+            "name": "Favoritos",
+            "description": "Favoritos"
         },
         {
             "name": "Inventarios",
@@ -2115,6 +3027,10 @@
         {
             "name": "Proveedores",
             "description": "Proveedores"
+        },
+        {
+            "name": "Reseñas",
+            "description": "Reseñas"
         },
         {
             "name": "Transacciones",

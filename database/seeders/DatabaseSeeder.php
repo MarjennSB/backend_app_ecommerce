@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
             TipoMetodoPagoSeeder::class,
 
             PermissionsDemoSeeder::class,
+            CategoriaSeeder::class,
+            TipoMarcaSeeder::class,
         ]);
     }
 }

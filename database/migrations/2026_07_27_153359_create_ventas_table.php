@@ -13,18 +13,27 @@ return new class extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cliente_id')->nullable();
-            $table->foreign('cliente_id')->references('id')->on('clientes');
+            
             $table->unsignedBigInteger('usuario_id')->nullable();
             $table->foreign('usuario_id')->references('id')->on('usuarios');
-            $table->unsignedBigInteger('tipo_documento_comprobante_id')->nullable();
-            $table->foreign('tipo_documento_comprobante_id')->references('id')->on('tipo_documento_comprobantes');
-            $table->string('numero_comprobante')->nullable();
-            $table->decimal('precio_total', 10, 2)->nullable();
-            $table->date('fecha_venta')->nullable();
+            $table->unsignedBigInteger('direccion_envio_id')->nullable();
+            $table->foreign('direccion_envio_id')->references('id')->on('direccion_envios');
             $table->unsignedBigInteger('tipo_metodo_pago_id')->nullable();
             $table->foreign('tipo_metodo_pago_id')->references('id')->on('tipo_metodo_pagos');
+            $table->string('codigo_transaccion_pasarela', 150)->nullable();
+
+            // Desglose del pago (Vital para E-commerce)
+            $table->decimal('subtotal', 10, 2)->nullable();
+            $table->decimal('descuento_total', 10, 2)->default(0.00);
+            $table->decimal('costo_envio', 10, 2)->default(0.00);
+            $table->decimal('impuestos_igv', 10, 2)->nullable();
+            $table->decimal('monto_total', 10, 2)->nullable(); // Lo que llamabas precio_total
+
+            $table->string('estado_venta', 30)->default('PENDIENTE');
+            $table->date('fecha_venta')->nullable();
+            
             $table->string('ruta_pdf')->nullable();
+
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();

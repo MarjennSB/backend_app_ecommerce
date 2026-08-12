@@ -13,13 +13,13 @@ use OpenApi\Attributes as OA;
 class ApiProveedorController extends Controller
 {
 
-public function __construct()
+    public function __construct()
     {
         $this->middleware('jwt.auth');
         $this->middleware('can:listar_proveedor')->only('index');
         $this->middleware('can:registrar_proveedor')->only('store');
         $this->middleware('can:editar_proveedor')->only('update');
-        $this->middleware('can:eliminar_proveedor')->only('destroy');
+        /* $this->middleware('can:eliminar_proveedor')->only('destroy'); */
     }
 
 

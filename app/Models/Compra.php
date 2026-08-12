@@ -31,5 +31,4 @@ class Compra extends Model
     {
         return $this->hasMany(DetalleCompra::class, 'compra_id');
     }
-
 }

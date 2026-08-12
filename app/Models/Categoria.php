@@ -11,4 +11,12 @@ class Categoria extends Model
     use HasFactory, SoftDeletes;
     
     protected $table = 'categorias';
+
+    /**
+     * Use slug for route model binding in public endpoints
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

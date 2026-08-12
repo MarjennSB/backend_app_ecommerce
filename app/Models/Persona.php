@@ -36,4 +36,9 @@ class Persona extends Model
     {
         return $this->belongsTo(Distrito::class, 'distrito_id');
     }
+
+    public function usuario()
+    {
+        return $this->hasOne(Usuario::class, 'persona_id');
+    }
 }

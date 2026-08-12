@@ -12,20 +12,16 @@ class Venta extends Model
     
     protected $table = 'ventas';
 
-    public function cliente()
-    {
-        return $this->belongsTo(Cliente::class, 'cliente_id');
-    }
-
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
-    public function tipoDocumentoComprobante()
+    public function direccionEnvio()
     {
-        return $this->belongsTo(TipoDocumentoComprobante::class, 'tipo_documento_comprobante_id');
+        return $this->belongsTo(DireccionEnvio::class, 'direccion_envio_id');
     }
+
 
     public function tipoMetodoPago()
     {
@@ -37,4 +33,8 @@ class Venta extends Model
         return $this->hasMany(DetalleVenta::class, 'venta_id');
     }
 
+    public function comprobanteVenta()
+    {
+        return $this->hasOne(ComprobanteVenta::class, 'venta_id');
+    }
 }

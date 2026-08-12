@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('producto_id')->references('id')->on('productos');
             $table->integer('cantidad')->nullable();
             $table->decimal('precio_unitario', 10, 2)->nullable();
+            $table->decimal('porcentaje_descuento', 5, 2)->default(0.00);
             $table->decimal('subtotal', 10, 2)->nullable();
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();

@@ -17,26 +17,26 @@ return new class extends Migration
             $table->foreign('usuario_id')->references('id')->on('usuarios');
             $table->unsignedBigInteger('categoria_id')->nullable();
             $table->foreign('categoria_id')->references('id')->on('categorias');
-            $table->string('nombre')->nullable();
-            $table->string('descripcion')->nullable();
-            $table->decimal('precio', 10, 2)->nullable();
-            $table->integer('cantidad')->nullable();
-            $table->string('codigo_barras')->nullable();
-            $table->string('codigo_qr')->nullable();
-            $table->string('fecha_vencimiento')->nullable();
+            $table->unsignedBigInteger('tipo_marca_id')->nullable();
+            $table->foreign('tipo_marca_id')->references('id')->on('tipo_marcas');
+            $table->string('nombre', 150);
+            $table->string('slug', 200)->unique();
+            $table->string('descripcion_corta', 255)->nullable();
+            $table->text('descripcion_larga')->nullable();
+            $table->decimal('precio_venta', 10, 2);
+            $table->decimal('precio_oferta', 10, 2)->nullable();
+            $table->decimal('precio_compra_referencial', 10, 2)->nullable();
+            $table->boolean('es_destacado')->default(false);
+            $table->integer('stock_actual')->default(0);
+            $table->string('codigo_barras', 100)->unique()->nullable();
+            $table->string('codigo_qr', 255)->nullable();
+            $table->date('fecha_vencimiento')->nullable();
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
     }
 
-
-    /* $table->unsignedBigInteger('provincia_id')->nullable();
-            $table->foreign('provincia_id')->references('id')->on('provincias');
- */
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('productos');

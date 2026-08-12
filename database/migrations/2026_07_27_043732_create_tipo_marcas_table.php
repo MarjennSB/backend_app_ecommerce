@@ -11,25 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('distritos', function (Blueprint $table) {
+        Schema::create('tipo_marcas', function (Blueprint $table) {
             $table->id();
-            $table->string('descripcion')->nullable();
-            $table->unsignedBigInteger('provincia_id')->nullable();
-            $table->foreign('provincia_id')->references('id')->on('provincias');
+            $table->string('nombre')->nullable();
+            $table->string('siglas')->nullable();
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
     }
 
-    /* $table->unsignedBigInteger('provincia_id')->nullable();
-            $table->foreign('provincia_id')->references('id')->on('provincias');
- */
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('distritos');
+        Schema::dropIfExists('tipo_marcas');
     }
 };
