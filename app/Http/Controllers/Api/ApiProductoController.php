@@ -23,8 +23,8 @@ class ApiProductoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('jwt.auth');
-        $this->middleware('can:listar_producto')->only('index');
+        $this->middleware('jwt.auth')->except(['index', 'show']);
+        // Se removió 'can:listar_producto' del index para que sea público
         $this->middleware('can:registrar_producto')->only('store');
         $this->middleware('can:editar_producto')->only('update');
         /* $this->middleware('can:eliminar_producto')->only('destroy'); */
@@ -81,11 +81,12 @@ class ApiProductoController extends Controller
     {
         $search = $request->input('search');
         $per_page = $request->input('per_page', 10);
+        $categoria_id = $request->input('categoria_id');
 
         $productos = Producto::with([
-            'usuario.persona',
+            'usuario',
             'categoria',
-            'tipoMarca',
+            'marca',
             'imagenes',
         ])
             ->when($search, function ($query) use ($search) {
@@ -96,11 +97,14 @@ class ApiProductoController extends Controller
                         ->orWhere('descripcion_corta', 'ilike', "%{$search}%")
                         ->orWhere('descripcion_larga', 'ilike', "%{$search}%")
                         ->orWhere('codigo_barras', 'ilike', "%{$search}%")
-                        ->orWhereHas('tipoMarca', function ($tipoMarcaQuery) use ($search) {
-                            $tipoMarcaQuery->where('nombre', 'ilike', "%{$search}%");
+                        ->orWhereHas('marca', function ($marcaQuery) use ($search) {
+                            $marcaQuery->where('nombre', 'ilike', "%{$search}%");
                         });
 
                 });
+            })
+            ->when($categoria_id, function ($query) use ($categoria_id) {
+                $query->where('categoria_id', $categoria_id);
             })
             ->orderByDesc('id')
             ->paginate($per_page);
@@ -140,7 +144,7 @@ class ApiProductoController extends Controller
     )]
     public function show(Producto $producto)
     {
-        $producto->load(['imagenes', 'categoria', 'tipoMarca', 'usuario.persona']);
+        $producto->load(['imagenes', 'categoria', 'marca', 'usuario']);
         return ProductoResource::make($producto);
     }
 
@@ -174,7 +178,7 @@ class ApiProductoController extends Controller
                     properties: [
 
                         new OA\Property(
-                            property: 'tipo_marca_id',
+                            property: 'marca_id',
                             type: 'integer',
                             nullable: true,
                             example: 1,
@@ -324,7 +328,7 @@ class ApiProductoController extends Controller
         try {
 
             $request->validate([
-                'tipo_marca_id' => ['nullable', 'integer', 'exists:tipo_marcas,id'],
+                'marca_id' => ['nullable', 'integer', 'exists:marcas,id'],
                 'categoria_id' => ['required', 'integer', 'exists:categorias,id'],
                 'nombre' => ['required', 'string', 'max:150'],
                 'slug' => ['required', 'string', 'max:200', 'unique:productos,slug'],
@@ -348,7 +352,8 @@ class ApiProductoController extends Controller
 
                 'categoria_id.required' => 'La categoría es obligatoria.',
                 'categoria_id.exists' => 'La categoría seleccionada no existe.',
-                'tipo_marca_id.exists' => 'La marca seleccionada no existe.',                'nombre.required' => 'El nombre del producto es obligatorio.',
+                'marca_id.exists' => 'La marca seleccionada no existe.',                
+                'nombre.required' => 'El nombre del producto es obligatorio.',
                 'nombre.max' => 'El nombre no puede superar los 150 caracteres.',
                 'slug.required' => 'El slug del producto es obligatorio.',
                 'slug.max' => 'El slug no puede superar los 200 caracteres.',
@@ -431,7 +436,7 @@ class ApiProductoController extends Controller
             $producto = new Producto();
 
             $producto->usuario_id = Auth::id();
-            $producto->tipo_marca_id = $request->tipo_marca_id;
+            $producto->marca_id = $request->marca_id;
             $producto->categoria_id = $request->categoria_id;
 
             $producto->nombre = $request->nombre;
@@ -528,10 +533,10 @@ class ApiProductoController extends Controller
                 'mensaje' => 'Producto creado correctamente',
                 'producto' => ProductoResource::make(
                     $producto->load([
-                        'usuario.persona',
+                        'usuario',
                         'categoria',
                         'imagenes',
-                        'tipoMarca'
+                        'marca'
                     ])
                 ),
             ], 200);
@@ -597,7 +602,7 @@ class ApiProductoController extends Controller
                         ),
 
                         new OA\Property(
-                            property: 'tipo_marca_id',
+                            property: 'marca_id',
                             type: 'integer',
                             nullable: true,
                             example: 1,
@@ -760,7 +765,7 @@ class ApiProductoController extends Controller
     {
         try {
             $request->validate([
-                'tipo_marca_id' => ['nullable', 'integer', 'exists:tipo_marcas,id'],
+                'marca_id' => ['nullable', 'integer', 'exists:marcas,id'],
                 'categoria_id' => ['required', 'integer', 'exists:categorias,id'],
                 'nombre' => ['required', 'string', 'max:150'],
                 'slug' => ['required', 'string', 'max:200', 'unique:productos,slug,' . $producto->id],
@@ -778,7 +783,7 @@ class ApiProductoController extends Controller
                 'imagenes_eliminar' => ['nullable', 'array'],
                 'imagenes_eliminar.*' => ['integer', 'exists:imagen_productos,id'],
             ], [
-                'tipo_marca_id.exists' => 'La marca seleccionada no existe.',
+                'marca_id.exists' => 'La marca seleccionada no existe.',
                 'categoria_id.required' => 'La categoría es obligatoria.',
                 'categoria_id.exists' => 'La categoría seleccionada no existe.',
                 'nombre.required' => 'El nombre del producto es obligatorio.',
@@ -814,7 +819,7 @@ class ApiProductoController extends Controller
         DB::beginTransaction();
 
         try {
-            $producto->tipo_marca_id = $request->tipo_marca_id;
+            $producto->marca_id = $request->marca_id;
             $producto->categoria_id = $request->categoria_id;
             $producto->nombre = $request->nombre;
             $producto->slug = $request->slug;
@@ -859,7 +864,7 @@ class ApiProductoController extends Controller
                 'codigo' => 200,
                 'mensaje' => 'Producto actualizado correctamente',
                 'producto' => ProductoResource::make(
-                    $producto->load(['usuario.persona', 'categoria', 'tipoMarca', 'imagenes'])
+                    $producto->load(['usuario', 'categoria', 'marca', 'imagenes'])
                 ),
             ], 200);
 

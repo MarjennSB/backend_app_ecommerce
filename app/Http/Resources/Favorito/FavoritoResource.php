@@ -15,10 +15,6 @@ class FavoritoResource extends JsonResource
             'usuario_id' => $this->usuario_id,
             'usuario_correo' => $this->usuario?->correo,
 
-            'persona_nombre' => $this->usuario?->persona?->nombres,
-            'persona_apellido_paterno' => $this->usuario?->persona?->apellido_paterno,
-            'persona_apellido_materno' => $this->usuario?->persona?->apellido_materno,
-
             'producto_id' => $this->producto_id,
             'producto_nombre' => $this->producto?->nombre,
             'producto_slug' => $this->producto?->slug,

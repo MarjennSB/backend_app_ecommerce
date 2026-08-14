@@ -126,7 +126,7 @@ class ApiInventarioController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'inventario' => InventarioCollection::collection($movimientos),
+            'inventario' => InventarioCollection::make($movimientos),
             'total' => $movimientos->total(),
             'pagination' => [
                 'total' => $movimientos->total(),

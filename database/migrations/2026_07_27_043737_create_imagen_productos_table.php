@@ -15,12 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('producto_id')->nullable();
             $table->foreign('producto_id')->references('id')->on('productos');
-            
-            // Datos de la imagen
             $table->string('ruta_imagen', 500);
             $table->boolean('es_imagen_principal')->default(false);
             $table->integer('orden')->default(1);
-
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();

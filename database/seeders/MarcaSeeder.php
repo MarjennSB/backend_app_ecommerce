@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\TipoMarca;
+use App\Models\Marca;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
-class TipoMarcaSeeder extends Seeder
+class MarcaSeeder extends Seeder
 {
     public function run(): void
     {
@@ -21,7 +22,8 @@ class TipoMarcaSeeder extends Seeder
                     ['nombre' => 'Xiaomi', 'siglas' => 'XIA', 'estado' => 1]];
 
         foreach ($marcas as $marca) {
-            TipoMarca::create($marca);
+            $marca['slug'] = Str::slug($marca['nombre']);
+            Marca::create($marca);
         }
     }
 }

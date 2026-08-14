@@ -2,141 +2,139 @@
 
 namespace Database\Seeders;
 
-use App\Models\Persona;
 use App\Models\Usuario;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
+use Spatie\Permission\Models\Permission;
+use HasRoles;
 
 class PermissionsDemoSeeder extends Seeder
 {
+  /**
+   * Run the database seeds.
+   *
+   * @return void
+   */
+  public function run()
+  {
+    // Limpiar caché de permisos
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-/**
-     * Create the initial roles and permissions.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        // Reset cached roles and permissions
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+    //// PRIMERA PARTE
+    $role1 = Role::firstOrCreate(['guard_name' => 'api', 'name' => 'ADMINISTRADOR']);
+    $role2 = Role::firstOrCreate(['guard_name' => 'api', 'name' => 'USUARIO EXTERNO']);
 
-        $roleAdmin   = Role::firstOrCreate(['guard_name' => 'api', 'name' => 'Administrador']);
-        $roleSeller  = Role::firstOrCreate(['guard_name' => 'api', 'name' => 'Vendedor']);
-        $roleClient  = Role::firstOrCreate(['guard_name' => 'api', 'name' => 'Cliente']);
+    // create permissions
 
-        // Define permissions sets
-        $adminPermissions = [
-            // Roles & users
-            'registrar_rol','listar_rol','ver_rol','editar_rol','eliminar_rol',
-            'registrar_usuario','listar_usuario','editar_usuario','eliminar_usuario',
-            // Personas
-            'registrar_persona','listar_persona','editar_persona','eliminar_persona',
-            // Categorias
-            'registrar_categoria','listar_categoria','ver_categoria','editar_categoria','eliminar_categoria',
-            // Productos
-            'registrar_producto','listar_producto','ver_producto','editar_producto','eliminar_producto',
-            // Proveedores / Clientes
-            'registrar_proveedor','listar_proveedor','editar_proveedor','eliminar_proveedor',
-            'registrar_cliente','listar_cliente','editar_cliente','eliminar_cliente',
-            // Ventas / Compras
-            'registrar_venta','listar_venta','ver_venta','editar_venta','eliminar_venta',
-            'registrar_compra','listar_compra','editar_compra','eliminar_compra',
-            // Inventario / Transacciones
-            'registrar_inventario','listar_inventario','editar_inventario','eliminar_inventario',
-            'registrar_transaccion','listar_transaccion','editar_transaccion',
-            // Favoritos / Carritos / Reseñas / Master
-            'registrar_favorito','listar_favorito','editar_favorito',
-            'registrar_carrito','listar_carrito','editar_carrito',
-            'registrar_resena','listar_resena','editar_resena',
-            'registrar_master','listar_master','editar_master',
-        ];
+        //ROLES
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_rol', 'description' => 'Lista de Roles'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_rol', 'description' => 'Registrar Roles'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_rol', 'description' => 'Editar Roles'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_rol', 'description' => 'Eliminar Roles'])->syncRoles([$role1]);
 
-        $sellerPermissions = [
-            // Sellers can list and manage products they own (enforced later with policies if needed)
-            'listar_producto','registrar_producto','editar_producto','eliminar_producto',
-            'listar_venta','ver_venta','registrar_venta',
-        ];
+        //USUARIOS
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_usuario', 'description' => 'Lista de Usuarios'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_usuario', 'description' => 'Registrar Usuarios'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_usuario', 'description' => 'Editar Usuarios'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_usuario', 'description' => 'Eliminar Usuarios'])->syncRoles([$role1]);
 
-        $clientPermissions = [
-            // Clients (end customers) - minimal global permissions. Owner-scoped actions must be enforced by policies/guards.
-            'registrar_venta', // allow creating purchases
-            'ver_perfil',      // semantic permission to allow client to view/update own profile (enforced by policy)
-            'editar_perfil',
-            // Cart and favorites
-            'registrar_carrito','listar_carrito','registrar_favorito','listar_favorito',
-            // Read-only access (optional - public endpoints already allow this without auth)
-            'listar_producto','ver_producto','listar_categoria','ver_categoria','listar_resena'
-        ];
+        //CATEGORIA
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_categoria', 'description' => 'Lista de Categorias'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_categoria', 'description' => 'Registrar Categorias'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_categoria', 'description' => 'Editar Categorias'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'ver_categoria', 'description' => 'Ver Categoria'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_categoria', 'description' => 'Eliminar Categorias'])->syncRoles([$role1]);
 
-        // Create all permissions and assign to roles accordingly
-        foreach ($adminPermissions as $perm) {
-            Permission::firstOrCreate(['guard_name' => 'api', 'name' => $perm])->syncRoles([$roleAdmin]);
-        }
+        //PRODUCTO
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_producto', 'description' => 'Lista de Productos'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_producto', 'description' => 'Registrar Productos'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_producto', 'description' => 'Editar Productos'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_producto', 'description' => 'Eliminar Productos'])->syncRoles([$role1]);
 
-        foreach ($sellerPermissions as $perm) {
-            Permission::firstOrCreate(['guard_name' => 'api', 'name' => $perm])->syncRoles([$roleSeller, $roleAdmin]);
-        }
+        //COMPRA
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_compra', 'description' => 'Lista de Compras'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_compra', 'description' => 'Registrar Compras'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_compra', 'description' => 'Editar Compras'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_compra', 'description' => 'Eliminar Compras'])->syncRoles([$role1]);
 
-        foreach ($clientPermissions as $perm) {
-            Permission::firstOrCreate(['guard_name' => 'api', 'name' => $perm])->syncRoles([$roleClient, $roleAdmin]);
-        }
+        //PROVEEDOR
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_proveedor', 'description' => 'Lista de Proveedores'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_proveedor', 'description' => 'Registrar Proveedores'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_proveedor', 'description' => 'Editar Proveedores'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_proveedor', 'description' => 'Eliminar Proveedores'])->syncRoles([$role1]);
 
-        // Create a demo admin user (existing behaviour)
-        $persona = Persona::create([
-            'tipo_documento_identidad_id' => 1,
-            'numero_documento' => '76122795',
-            'nombres' => 'Test',
-            'apellido_paterno' => 'User',
-            'apellido_materno' => 'Example',
-            'numero_celular' => '967043422',
-            'departamento_id' => '1',
-            'provincia_id' => '2',
-            'distrito_id' => '10',
-            'fecha_nacimiento' => '2003-12-29',
-            'genero_id' => 1,
-            'estado' => 1,
-        ]);
+        //PERSONA
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_persona', 'description' => 'Lista de Personas'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_persona', 'description' => 'Registrar Personas'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_persona', 'description' => 'Editar Personas'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_persona', 'description' => 'Eliminar Personas'])->syncRoles([$role1]);
+        
+        //VENTA
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_venta', 'description' => 'Lista de Ventas'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_venta', 'description' => 'Registrar Ventas'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_venta', 'description' => 'Editar Ventas'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_venta', 'description' => 'Eliminar Ventas'])->syncRoles([$role1]);
 
-        // Admin user
-        $user = Usuario::create([
-            'correo' => 'test@example.com',
-            'login' => 'admin',
-            'password' => bcrypt('123'),
-            'persona_id' => $persona->id,
-            'rol_id' => $roleAdmin->id,
-            'estado' => 1,
-        ]);
+        //CLIENTE
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_cliente', 'description' => 'Lista de Clientes'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_cliente', 'description' => 'Registrar Clientes'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_cliente', 'description' => 'Editar Clientes'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_cliente', 'description' => 'Eliminar Clientes'])->syncRoles([$role1]);
 
-        $user->assignRole($roleAdmin);
+        //INVENTARIO
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_inventario', 'description' => 'Lista de Inventarios'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_inventario', 'description' => 'Registrar Inventarios'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_inventario', 'description' => 'Editar Inventarios'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_inventario', 'description' => 'Eliminar Inventarios'])->syncRoles([$role1]);
 
-        // Create a demo client user for testing
-        $personaClient = Persona::create([
-            'tipo_documento_identidad_id' => 1,
-            'numero_documento' => '76543210',
-            'nombres' => 'Cliente',
-            'apellido_paterno' => 'Demo',
-            'apellido_materno' => 'User',
-            'numero_celular' => '987654321',
-            'departamento_id' => '1',
-            'provincia_id' => '2',
-            'distrito_id' => '10',
-            'fecha_nacimiento' => '1990-01-01',
-            'genero_id' => 1,
-            'estado' => 1,
-        ]);
+        //FAVORITO
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_favorito', 'description' => 'Lista de Favoritos'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_favorito', 'description' => 'Registrar Favoritos'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_favorito',   'description' => 'Eliminar Favoritos'])->syncRoles([$role1, $role2]);
 
-        $clientUser = Usuario::create([
-            'correo' => 'cliente@example.com',
-            'login' => 'cliente',
-            'password' => bcrypt('cliente123'),
-            'persona_id' => $personaClient->id,
-            'rol_id' => $roleClient->id,
-            'estado' => 1,
-        ]);
+        //RESENA
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_resena', 'description' => 'Lista de Reseñas'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_resena', 'description' => 'Registrar Reseñas'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_resena',   'description' => 'Editar Reseñas'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_resena',   'description' => 'Eliminar Reseñas'])->syncRoles([$role1, $role2]);
 
-        $clientUser->assignRole($roleClient);
+        //DIRECCION ENVIO
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_direccionenvio', 'description' => 'Lista de Direcciones de Envio'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_direccionenvio', 'description' => 'Registrar Direcciones de Envio'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_direccionenvio',   'description' => 'Editar Direcciones de Envio'])->syncRoles([$role1, $role2]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_direccionenvio',   'description' => 'Eliminar Direcciones de Envio'])->syncRoles([$role1, $role2]);
 
-    }
-}
+        //TRANSACCION
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_transaccion', 'description' => 'Lista de Transacciones'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'registrar_transaccion', 'description' => 'Registrar Transacciones'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'editar_transaccion', 'description' => 'Editar Transacciones'])->syncRoles([$role1]);
+        Permission::create(['guard_name' => 'api', 'name' => 'eliminar_transaccion', 'description' => 'Eliminar Transacciones'])->syncRoles([$role1]);
+
+        //MASTER
+        Permission::create(['guard_name' => 'api', 'name' => 'listar_master', 'description' => 'Lista de Datos Maestros'])->syncRoles([$role1]);
+
+        // CREAR USUARIO ADMINISTRADOR POR DEFECTO
+        $adminUser = Usuario::firstOrCreate(
+            ['correo' => 'admin@correo.com'],
+            [
+                'tipo_documento_identidad_id' => 1,
+                'numero_documento' => '12345678',
+                'nombres' => 'Administrador',
+                'apellido_paterno' => 'Sistema',
+                'apellido_materno' => 'Admin',
+                'numero_celular' => '999888777',
+                'departamento_id' => 1,
+                'provincia_id' => 15,
+                'distrito_id' => 1,
+                'fecha_nacimiento' => '1990-01-01',
+                'genero_id' => 1,
+                'password' => Hash::make('123456'),
+                'acepto_termino_condiciones' => 1,
+                'estado' => 1
+            ]
+        );
+        $adminUser->assignRole($role1);
+  }
+};

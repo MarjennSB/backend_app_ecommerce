@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('marcas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 60);
+            $table->string('siglas', 10);
             $table->string('slug', 100)->unique();
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();

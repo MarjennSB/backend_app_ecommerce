@@ -15,27 +15,28 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('tipo_documento_identidad_id')->nullable();
             $table->foreign('tipo_documento_identidad_id')->references('id')->on('tipo_documento_identidades');
-            $table->string('numero_documento')->nullable();
-            $table->string('nombres')->nullable();
-            $table->string('apellido_paterno')->nullable();
-            $table->string('apellido_materno')->nullable();
-            $table->string('numero_celular')->nullable();
-            $table->unsignedBigInteger('provincia_id')->nullable();
-            $table->foreign('provincia_id')->references('id')->on('provincias');
+            $table->string('numero_documento', 20)->unique()->comment('DNI, RUC, etc.');
+            $table->string('nombres', 150)->comment('Nombres o Razón Social del proveedor');
+            $table->string('apellido_paterno', 100)->nullable();
+            $table->string('apellido_materno', 100)->nullable();
+            $table->string('numero_celular', 20)->nullable();
+            $table->string('correo', 150)->nullable();
+            $table->string('direccion', 255)->nullable();
             $table->unsignedBigInteger('departamento_id')->nullable();
-            $table->foreign('departamento_id')->references('id')->on('departamentos');
+            $table->unsignedBigInteger('provincia_id')->nullable();
             $table->unsignedBigInteger('distrito_id')->nullable();
+            $table->foreign('departamento_id')->references('id')->on('departamentos');
+            $table->foreign('provincia_id')->references('id')->on('provincias');
             $table->foreign('distrito_id')->references('id')->on('distritos');
-            $table->date('fecha_nacimiento')->nullable();
-            $table->unsignedBigInteger('genero_id')->nullable();
-            $table->foreign('genero_id')->references('id')->on('generos');
-            $table->string('profile_photo_path', 2048)->nullable();
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('personas');

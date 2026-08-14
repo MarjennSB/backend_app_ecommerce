@@ -12,28 +12,16 @@ class VentaResource extends JsonResource
         return [
             'id' => $this->id,
             'usuario_id' => $this->usuario_id,
-
-            'direccion_envio_id' => $this->direccion_envio_id,
-            'direccion_departamento' => $this->direccionEnvio?->departamento,
-            'direccion_provincia' => $this->direccionEnvio?->provincia,
-            'direccion_distrito' => $this->direccionEnvio?->distrito,
-            'direccion_completa' => $this->direccionEnvio?->direccion,
-            'direccion_referencia' => $this->direccionEnvio?->referencia,
-
             'tipo_metodo_pago_id' => $this->tipo_metodo_pago_id,
             'tipo_metodo_pago_nombre' => $this->tipoMetodoPago?->nombre,
-
             'codigo_transaccion_pasarela' => $this->codigo_transaccion_pasarela,
-
             'subtotal' => $this->subtotal,
             'descuento_total' => $this->descuento_total,
             'costo_envio' => $this->costo_envio,
             'impuestos_igv' => $this->impuestos_igv,
             'monto_total' => $this->monto_total,
-
             'estado_venta' => $this->estado_venta,
             'fecha_venta' => $this->fecha_venta,
-            'ruta_pdf' => $this->ruta_pdf,
             'estado' => $this->estado,
 
             'detalles' => $this->detalles->map(function ($detalle) {
@@ -52,7 +40,6 @@ class VentaResource extends JsonResource
                     'created_at' => $detalle->created_at,
                 ];
             }),
-
             'comprobante_id' => $this->comprobanteVenta?->id,
             'comprobante_tipo_documento_id' => $this->comprobanteVenta?->tipo_documento_comprobante_id,
             'comprobante_tipo_documento_nombre' => $this->comprobanteVenta?->tipoDocumentoComprobante?->nombre,
@@ -61,7 +48,6 @@ class VentaResource extends JsonResource
             'comprobante_ruta_pdf_xml' => $this->comprobanteVenta?->ruta_pdf_xml,
             'comprobante_estado' => $this->comprobanteVenta?->estado_comprobante,
             'comprobante_fecha_emision' => $this->comprobanteVenta?->fecha_emision,
-
             'created_at' => $this->created_at,
         ];
     }

@@ -11,18 +11,13 @@ class CompraResource extends JsonResource
     {
         return [
             'id' => $this->id,
-
-            'proveedor_id' => $this->proveedor_id,
-
             'usuario_id' => $this->usuario_id,
             'usuario_correo' => $this->usuario?->correo,
-            'persona_nombre' => $this->usuario?->persona?->nombres,
-            'persona_apellido_paterno' => $this->usuario?->persona?->apellido_paterno,
-            'persona_apellido_materno' => $this->usuario?->persona?->apellido_materno,
-
+            'proveedor_id' => $this->proveedor_id,
+            'proveedor_nombre' => $this->proveedor?->persona?->nombres,
+            'proveedor_documento' => $this->proveedor?->persona?->numero_documento,
             'tipo_documento_comprobante_id' => $this->tipo_documento_comprobante_id,
             'tipo_documento_comprobante_nombre' => $this->tipoDocumentoComprobante?->nombre,
-
             'numero_comprobante' => $this->numero_comprobante,
             'costo_total' => $this->costo_total,
             'fecha_compra' => $this->fecha_compra,
@@ -33,17 +28,14 @@ class CompraResource extends JsonResource
                 return [
                     'id' => $detalle->id,
                     'compra_id' => $detalle->compra_id,
-
                     'producto_id' => $detalle->producto_id,
                     'producto_nombre' => $detalle->producto?->nombre,
                     'producto_slug' => $detalle->producto?->slug,
                     'producto_codigo_barras' => $detalle->producto?->codigo_barras,
-
                     'cantidad' => $detalle->cantidad,
                     'costo_unitario' => $detalle->costo_unitario,
                     'subtotal' => $detalle->subtotal,
                     'estado' => $detalle->estado,
-
                     'created_at' => $detalle->created_at,
                 ];
             }),

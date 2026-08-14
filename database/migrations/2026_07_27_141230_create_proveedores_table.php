@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('persona_id')->nullable();
+            $table->unsignedBigInteger('persona_id')->unique();
             $table->foreign('persona_id')->references('id')->on('personas');
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();

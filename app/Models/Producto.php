@@ -22,20 +22,16 @@ class Producto extends Model
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
-    public function tipoMarca()
+    public function marca()
     {
-        return $this->belongsTo(TipoMarca::class, 'tipo_marca_id');
+        return $this->belongsTo(Marca::class, 'marca_id');
     }
 
     public function imagenes()
     {
-        // ✅ CORRECTO: La llave foránea en tu tabla es 'producto_id'
         return $this->hasMany(ImagenProducto::class, 'producto_id');
     }
 
-    /**
-     * Use slug for route model binding in public endpoints
-     */
     public function getRouteKeyName()
     {
         return 'slug';

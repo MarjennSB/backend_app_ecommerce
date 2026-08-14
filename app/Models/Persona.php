@@ -11,15 +11,11 @@ class Persona extends Model
     use HasFactory, SoftDeletes;
     
     protected $table = 'personas';
+    protected $guarded = [];
 
     public function tipoDocumentoIdentidad()
     {
         return $this->belongsTo(TipoDocumentoIdentidad::class, 'tipo_documento_identidad_id');
-    }
-
-    public function genero()
-    {
-        return $this->belongsTo(Genero::class, 'genero_id');
     }
 
     public function departamento()
@@ -35,10 +31,5 @@ class Persona extends Model
     public function distrito()
     {
         return $this->belongsTo(Distrito::class, 'distrito_id');
-    }
-
-    public function usuario()
-    {
-        return $this->hasOne(Usuario::class, 'persona_id');
     }
 }

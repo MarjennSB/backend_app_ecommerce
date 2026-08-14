@@ -21,7 +21,13 @@ class ApiMasterController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('jwt.auth');
+        $this->middleware('jwt.auth')->except([
+            'selectDepartamento',
+            'selectProvincia',
+            'selectDistrito',
+            'selectTipoDocumento',
+            'selectGenero'
+        ]);
         $this->middleware('can:listar_master')->only('index');
         $this->middleware('can:registrar_master')->only('store');
         $this->middleware('can:editar_master')->only('update');
@@ -32,7 +38,7 @@ class ApiMasterController extends Controller
     {
         $tipodocumentoidentidad = TipoDocumentoIdentidad::where('estado', true)
             ->orderBy('nombre', 'asc')
-            ->get(['id', 'nombre', 'siglas']);
+            ->get(['id', 'nombre', 'siglas', 'minimo', 'maximo']);
 
         return response()->json(['tipodocumentoidentidad' => $tipodocumentoidentidad]);
     }

@@ -113,7 +113,7 @@ class ApiVentaController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'ventas' => VentaCollection::collection($ventas),
+            'ventas' => VentaCollection::make($ventas),
             'total' => $ventas->total(),
             'pagination' => [
                 'total' => $ventas->total(),
@@ -151,7 +151,7 @@ class ApiVentaController extends Controller
     {
         // Note: routes are protected by jwt.verify; further policies can be applied as needed
         $venta->load([
-            'usuario.persona',
+            'usuario',
             'direccionEnvio',
             'tipoMetodoPago',
             'detalles.producto',
@@ -183,7 +183,9 @@ class ApiVentaController extends Controller
                         'costo_envio',
                         'impuestos_igv',
                         'estado',
-                        'detalles',
+                        'detalles[0][producto_id]',
+                        'detalles[0][cantidad]',
+                        'detalles[0][precio_unitario]',
                     ],
                     properties: [
                         new OA\Property(
@@ -281,57 +283,38 @@ class ApiVentaController extends Controller
                             nullable: true,
                             description: 'Archivo PDF o XML asociado al comprobante. Opcional. Máximo 5MB.'
                         ),
-
+                        // DETALLE 1
                         new OA\Property(
-                            property: 'detalles',
-                            type: 'array',
-                            minItems: 1,
-                            description: 'Lista de productos incluidos en la venta.',
-                            items: new OA\Items(
-                                type: 'object',
-                                required: [
-                                    'producto_id',
-                                    'cantidad',
-                                    'precio_unitario',
-                                ],
-                                properties: [
-                                    new OA\Property(
-                                        property: 'producto_id',
-                                        type: 'integer',
-                                        example: 1,
-                                        description: 'ID del producto.'
-                                    ),
-
-                                    new OA\Property(
-                                        property: 'cantidad',
-                                        type: 'integer',
-                                        minimum: 1,
-                                        example: 2,
-                                        description: 'Cantidad de unidades a vender.'
-                                    ),
-
-                                    new OA\Property(
-                                        property: 'precio_unitario',
-                                        type: 'number',
-                                        format: 'float',
-                                        minimum: 0,
-                                        example: 150.00,
-                                        description: 'Precio unitario del producto.'
-                                    ),
-
-                                    new OA\Property(
-                                        property: 'porcentaje_descuento',
-                                        type: 'number',
-                                        format: 'float',
-                                        minimum: 0,
-                                        maximum: 100,
-                                        nullable: true,
-                                        default: 0,
-                                        example: 5.00,
-                                        description: 'Porcentaje de descuento aplicado al producto.'
-                                    ),
-                                ]
-                            )
+                            property: 'detalles[0][producto_id]',
+                            type: 'integer',
+                            example: 1,
+                            description: 'ID del primer producto.'
+                        ),
+                        new OA\Property(
+                            property: 'detalles[0][cantidad]',
+                            type: 'integer',
+                            minimum: 1,
+                            example: 2,
+                            description: 'Cantidad de unidades a vender.'
+                        ),
+                        new OA\Property(
+                            property: 'detalles[0][precio_unitario]',
+                            type: 'number',
+                            format: 'float',
+                            minimum: 0,
+                            example: 150.00,
+                            description: 'Precio unitario del producto.'
+                        ),
+                        new OA\Property(
+                            property: 'detalles[0][porcentaje_descuento]',
+                            type: 'number',
+                            format: 'float',
+                            minimum: 0,
+                            maximum: 100,
+                            nullable: true,
+                            default: 0,
+                            example: 5.00,
+                            description: 'Porcentaje de descuento aplicado al producto.'
                         ),
                     ]
                 )
@@ -358,7 +341,7 @@ class ApiVentaController extends Controller
     {
         try {
             $request->validate([
-                'direccion_envio_id'            => ['required', 'integer', 'exists:direcciones_envio,id'],
+                'direccion_envio_id'            => ['required', 'integer', 'exists:direccion_envios,id'],
                 'tipo_metodo_pago_id'           => ['required', 'integer', 'exists:tipo_metodo_pagos,id'],
                 'tipo_documento_comprobante_id' => ['required', 'integer', 'exists:tipo_documento_comprobantes,id'],
                 'serie_comprobante'             => ['required', 'string', 'max:10'],
@@ -414,9 +397,9 @@ class ApiVentaController extends Controller
         foreach ($request->detalles as $index => $item) {
             $producto = Producto::find($item['producto_id']);
 
-            if ($producto && $producto->cantidad < $item['cantidad']) {
+            if ($producto && $producto->stock_actual < $item['cantidad']) {
                 $erroresStock["detalles.{$index}.cantidad"] = [
-                    "Stock insuficiente para '{$producto->nombre}'. Disponible: {$producto->cantidad}."
+                    "Stock insuficiente para '{$producto->nombre}'. Disponible: {$producto->stock_actual}."
                 ];
             }
         }
@@ -584,7 +567,7 @@ class ApiVentaController extends Controller
                 $producto = Producto::find($item['producto_id']);
 
                 $producto->decrement(
-                    'cantidad',
+                    'stock_actual',
                     $cantidad
                 );
 
@@ -639,7 +622,7 @@ class ApiVentaController extends Controller
                 'mensaje' => 'Venta registrada correctamente',
                 'venta' => VentaResource::make(
                     $venta->load([
-                        'usuario.persona',
+                        'usuario',
                         'direccionEnvio',
                         'tipoMetodoPago',
                         'detalles.producto',
@@ -935,7 +918,7 @@ class ApiVentaController extends Controller
                 $producto = Producto::find($productoId);
 
                 $cantidadDisponible =
-                    $producto->cantidad +
+                    $producto->stock_actual +
                     ($stockDisponible[$productoId] ?? 0);
 
                 if ($cantidadDisponible < $cantidadNueva) {
@@ -1100,7 +1083,7 @@ class ApiVentaController extends Controller
                 */
 
                 Producto::find($detalleViejo->producto_id)
-                    ->increment('cantidad', $detalleViejo->cantidad);
+                    ->increment('stock_actual', $detalleViejo->cantidad);
 
                 /*
                 | Kardex: ajuste positivo
@@ -1186,7 +1169,7 @@ class ApiVentaController extends Controller
 
                         Producto::find($productoAnterior)
                             ->increment(
-                                'cantidad',
+                                'stock_actual',
                                 $cantidadAnterior
                             );
 
@@ -1222,7 +1205,7 @@ class ApiVentaController extends Controller
 
                         Producto::find($item['producto_id'])
                             ->decrement(
-                                'cantidad',
+                                'stock_actual',
                                 $cantidadNueva
                             );
 
@@ -1301,7 +1284,7 @@ class ApiVentaController extends Controller
 
                     Producto::find($item['producto_id'])
                         ->decrement(
-                            'cantidad',
+                            'stock_actual',
                             $cantidadNueva
                         );
 
@@ -1405,7 +1388,7 @@ class ApiVentaController extends Controller
                 'mensaje' => 'Venta actualizada correctamente',
                 'venta' => VentaResource::make(
                     $venta->load([
-                        'usuario.persona',
+                        'usuario',
                         'direccionEnvio',
                         'tipoMetodoPago',
                         'detalles.producto',

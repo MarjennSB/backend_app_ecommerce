@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreign('usuario_id')->references('id')->on('usuarios');
             $table->unsignedBigInteger('categoria_id')->nullable();
             $table->foreign('categoria_id')->references('id')->on('categorias');
-            $table->unsignedBigInteger('tipo_marca_id')->nullable();
-            $table->foreign('tipo_marca_id')->references('id')->on('tipo_marcas');
+            $table->unsignedBigInteger('marca_id')->nullable();
+            $table->foreign('marca_id')->references('id')->on('marcas');
             $table->string('nombre', 150);
             $table->string('slug', 200)->unique();
             $table->string('descripcion_corta', 255)->nullable();

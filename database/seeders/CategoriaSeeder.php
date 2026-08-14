@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Categoria;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CategoriaSeeder extends Seeder
 {
@@ -25,11 +26,8 @@ class CategoriaSeeder extends Seeder
         ];
 
         foreach ($categorias as $categoria) {
-            DB::table('categorias')->insert([
-                ...$categoria,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
+            $categoria['slug'] = Str::slug($categoria['nombre']);
+            Categoria::create($categoria);
         }
     }
 }

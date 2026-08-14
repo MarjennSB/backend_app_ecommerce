@@ -11,15 +11,16 @@ class Compra extends Model
     use HasFactory, SoftDeletes;
     
     protected $table = 'compras';
-
-    public function proveedor()
-    {
-        return $this->belongsTo(Proveedor::class, 'proveedor_id');
-    }
+    protected $guarded = [];
 
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
 
     public function tipoDocumentoComprobante()

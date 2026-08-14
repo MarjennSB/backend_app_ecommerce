@@ -74,10 +74,10 @@ class ApiFavoritoController extends Controller
         $per_page = $request->input('per_page', 10);
 
         $favoritos = Favorito::with([
-            'usuario.persona',
-            'producto.usuario.persona',
+            'usuario',
+            'producto.usuario',
             'producto.categoria',
-            'producto.tipoMarca',
+            'producto.marca',
             'producto.imagenes',
         ])
             ->where('usuario_id', Auth::id())
@@ -230,7 +230,7 @@ class ApiFavoritoController extends Controller
                 'mensaje' => 'Producto agregado a favoritos correctamente',
                 'favorito' => FavoritoResource::make(
                     $favorito->load([
-                        'usuario.persona',
+                        'usuario',
                         'producto',
                     ])
                 ),
@@ -343,10 +343,10 @@ class ApiFavoritoController extends Controller
                 'mensaje' => 'Favorito actualizado correctamente',
                 'favorito' => FavoritoResource::make(
                     $favorito->load([
-                        'usuario.persona',
-                        'producto.usuario.persona',
+                        'usuario',
+                        'producto.usuario',
                         'producto.categoria',
-                        'producto.tipoMarca',
+                        'producto.marca',
                         'producto.imagenes',
                     ])
                 ),

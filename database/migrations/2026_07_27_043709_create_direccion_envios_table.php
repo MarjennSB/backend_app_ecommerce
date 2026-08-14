@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('direccion_envios', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('usuario_id')->nullable();
             $table->foreign('usuario_id')->references('id')->on('usuarios');
-            // Datos de la dirección
             $table->string('alias_direccion', 50)->nullable();
-            $table->string('direccion_linea_1', 255);
+            $table->string('urbanizacion', 150)->nullable();
+            $table->string('sector', 100)->nullable();
+            $table->string('direccion', 255);
+            $table->string('manzana', 20)->nullable();
+            $table->string('lote', 20)->nullable();
             $table->string('referencia', 255)->nullable();
             $table->boolean('es_direccion_principal')->default(false);
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');

@@ -8,3 +8,4 @@ php artisan serve
 php artisan make:controller Api/ApiNombreController --resource
 
 php artisan l5-swagger:generate
+php artisan serve --port=3001

@@ -23,11 +23,21 @@ class Usuario extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $fillable = [
-        'login',
-        'usuario',
+        'numero_documento',
+        'nombres',
+        'apellido_paterno',
+        'apellido_materno',
+        'numero_celular',
+        'departamento_id',
+        'provincia_id',
+        'distrito_id',
+        'fecha_nacimiento',
+        'genero_id',
+        'profile_photo_path',
         'correo',
         'password',
         'rol_id',
+        'acepto_termino_condiciones',
         'estado',
     ];
 
@@ -51,6 +61,7 @@ class Usuario extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'acepto_termino_condiciones' => 'boolean',
         ];
     }
 
@@ -59,9 +70,29 @@ class Usuario extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
-    public function persona()
+    public function tipoDocumentoIdentidad()
     {
-        return $this->belongsTo(Persona::class, 'persona_id');
+        return $this->belongsTo(TipoDocumentoIdentidad::class, 'tipo_documento_identidad_id');
+    }
+
+    public function genero()
+    {
+        return $this->belongsTo(Genero::class, 'genero_id');
+    }
+
+    public function departamento()
+    {
+        return $this->belongsTo(Departamento::class, 'departamento_id');
+    }
+
+    public function provincia()
+    {
+        return $this->belongsTo(Provincia::class, 'provincia_id');
+    }
+
+    public function distrito()
+    {
+        return $this->belongsTo(Distrito::class, 'distrito_id');
     }
 
     public function rol()
@@ -69,11 +100,6 @@ class Usuario extends Authenticatable implements JWTSubject
         return $this->belongsTo(Role::class, 'rol_id');
     }
 
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
     public function getJWTCustomClaims()
     {
         return [];

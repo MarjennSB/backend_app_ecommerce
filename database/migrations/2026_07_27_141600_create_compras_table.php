@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('compras', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('proveedor_id')->nullable();
-            $table->foreign('proveedor_id')->references('id')->on('proveedores');
             $table->unsignedBigInteger('usuario_id')->nullable();
             $table->foreign('usuario_id')->references('id')->on('usuarios');
-            
+            $table->unsignedBigInteger('proveedor_id')->nullable();
+            $table->foreign('proveedor_id')->references('id')->on('proveedores');
             $table->unsignedBigInteger('tipo_documento_comprobante_id')->nullable();
             $table->foreign('tipo_documento_comprobante_id')->references('id')->on('tipo_documento_comprobantes');
             $table->string('numero_comprobante')->nullable();

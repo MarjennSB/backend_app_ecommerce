@@ -17,7 +17,7 @@ class ApiCategoriaController extends Controller
     public function __construct()
     {
         $this->middleware('jwt.auth')->except(['index', 'show']);
-        $this->middleware('can:listar_categoria')->only('index');
+        // Se removió 'can:listar_categoria' del index para que sea público
         $this->middleware('can:registrar_categoria')->only('store');
         $this->middleware('can:editar_categoria')->only('update');
         /* $this->middleware('can:eliminar_categoria')->only('destroy'); */
@@ -58,7 +58,7 @@ class ApiCategoriaController extends Controller
 
     public function index(Request $request)
     {
-        $search   = $request->string('search');
+        $search = $request->string('search');
         $per_page = $request->integer('per_page', 10);
 
         $categorias = Categoria::where('nombre', 'ilike', '%' . $search . '%')
@@ -67,14 +67,14 @@ class ApiCategoriaController extends Controller
 
         return response()->json([
             'categorias' => CategoriaCollection::make($categorias),
-            'total'      => $categorias->total(),
+            'total' => $categorias->total(),
             'pagination' => [
-                'total'         => $categorias->total(),
-                'current_page'  => $categorias->currentPage(),
-                'last_page'     => $categorias->lastPage(),
-                'per_page'      => $categorias->perPage(),
+                'total' => $categorias->total(),
+                'current_page' => $categorias->currentPage(),
+                'last_page' => $categorias->lastPage(),
+                'per_page' => $categorias->perPage(),
                 'total_visible' => $categorias->lastPage() < 5 ? $categorias->lastPage() : 5,
-                'itemsPerPage'  => $categorias->perPage(),
+                'itemsPerPage' => $categorias->perPage(),
             ],
         ]);
     }
@@ -183,39 +183,39 @@ class ApiCategoriaController extends Controller
 
         try {
             $request->validate([
-                'nombre'           => ['required', 'string', 'max:100', 'unique:categorias,nombre'],
-                'slug'              => ['required', 'string', 'max:200', 'unique:categorias,slug'],
-                'descripcion'        => ['nullable', 'string', 'max:300'],
-                'estado'           => ['required', 'boolean'],
+                'nombre' => ['required', 'string', 'max:100', 'unique:categorias,nombre'],
+                'slug' => ['required', 'string', 'max:200', 'unique:categorias,slug'],
+                'descripcion' => ['nullable', 'string', 'max:300'],
+                'estado' => ['required', 'boolean'],
             ], [
-                    'nombre.required'              => 'El nombre es obligatorio.',
-                    'nombre.max'                   => 'El nombre no debe superar los 100 caracteres.',               
-                    'nombre.unique'                => 'Ya existe una categoría con ese nombre.',
-                    'slug.required'              => 'El slug de la categoría es obligatorio.', 
-                    'slug.max'                   => 'El slug no puede superar los 200 caracteres.', 
-                    'slug.unique'                   => 'Ese slug ya está en uso.',
-                    'descripcion.max'              => 'La descripción no debe superar los 300 caracteres.',
-                    'estado.required'              => 'El estado es obligatorio.',
-                    'estado.boolean'               => 'El estado debe ser verdadero o falso.',
+                'nombre.required' => 'El nombre es obligatorio.',
+                'nombre.max' => 'El nombre no debe superar los 100 caracteres.',
+                'nombre.unique' => 'Ya existe una categoría con ese nombre.',
+                'slug.required' => 'El slug de la categoría es obligatorio.',
+                'slug.max' => 'El slug no puede superar los 200 caracteres.',
+                'slug.unique' => 'Ese slug ya está en uso.',
+                'descripcion.max' => 'La descripción no debe superar los 300 caracteres.',
+                'estado.required' => 'El estado es obligatorio.',
+                'estado.boolean' => 'El estado debe ser verdadero o falso.',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'mensaje' => 'Errores de validación',
-                'errors'  => $e->errors(),
+                'errors' => $e->errors(),
             ], 422);
         }
 
         $categoria = new Categoria();
-        $categoria->nombre           = $request->nombre;
-        $categoria->slug             = $request->slug;
-        $categoria->descripcion        = $request->descripcion;
-        $categoria->estado           = $request->estado;
+        $categoria->nombre = $request->nombre;
+        $categoria->slug = $request->slug;
+        $categoria->descripcion = $request->descripcion;
+        $categoria->estado = $request->estado;
         $categoria->save();
 
         return response()->json([
-            'codigo'  => 200,
+            'codigo' => 200,
             'mensaje' => 'Categoría creada correctamente',
-            'categoria'    => CategoriaResource::make($categoria),
+            'categoria' => CategoriaResource::make($categoria),
         ], 200);
     }
 
@@ -310,35 +310,35 @@ class ApiCategoriaController extends Controller
     {
         try {
             $request->validate([
-                'nombre'      => ['required', 'string', 'max:150'],
-                'slug'        => ['required', 'string', 'max:200', 'unique:categorias,slug,' . $categoria->id],
+                'nombre' => ['required', 'string', 'max:150'],
+                'slug' => ['required', 'string', 'max:200', 'unique:categorias,slug,' . $categoria->id],
                 'descripcion' => ['nullable', 'string', 'max:255'],
-                'estado'      => ['required', 'boolean'],
+                'estado' => ['required', 'boolean'],
             ], [
                 'nombre.required' => 'El nombre de la categoría es obligatorio.',
-                'nombre.max'      => 'El nombre de la categoría no puede superar los 150 caracteres.',
-                'slug.required'   => 'El slug de la categoría es obligatorio.',
-                'slug.max'        => 'El slug no puede superar los 200 caracteres.',
-                'slug.unique'     => 'Ese slug ya está en uso.',
+                'nombre.max' => 'El nombre de la categoría no puede superar los 150 caracteres.',
+                'slug.required' => 'El slug de la categoría es obligatorio.',
+                'slug.max' => 'El slug no puede superar los 200 caracteres.',
+                'slug.unique' => 'Ese slug ya está en uso.',
                 'descripcion.max' => 'La descripción no puede superar los 255 caracteres.',
                 'estado.required' => 'El estado es obligatorio.',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'mensaje' => 'Errores de validación',
-                'errors'  => $e->errors()
+                'errors' => $e->errors()
             ], 422);
         }
 
-        $categoria->nombre      = $request->nombre;
-        $categoria->slug        = $request->slug;
+        $categoria->nombre = $request->nombre;
+        $categoria->slug = $request->slug;
         $categoria->descripcion = $request->descripcion;
-        $categoria->estado      = $request->estado;
+        $categoria->estado = $request->estado;
 
         $categoria->save();
 
         return response()->json([
-            'mensaje'   => 'Categoría actualizada correctamente',
+            'mensaje' => 'Categoría actualizada correctamente',
             'categoria' => CategoriaResource::make($categoria),
         ], 200);
     }

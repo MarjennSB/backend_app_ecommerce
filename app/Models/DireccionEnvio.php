@@ -12,7 +12,7 @@ class DireccionEnvio extends Model
     
     protected $table = 'direccion_envios';
 
-    public function Usuario()
+    public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }

@@ -12,157 +12,6 @@
         }
     ],
     "paths": {
-        "/api/carritos": {
-            "get": {
-                "tags": [
-                    "Carritos"
-                ],
-                "summary": "Listar carritos",
-                "description": "Obtiene una lista paginada de todos los carritos registrados, incluyendo la información del usuario asociado, sus detalles y los productos correspondientes.",
-                "operationId": "2b8c2ea5ad558c1f4a9391420632bb1f",
-                "parameters": [
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Cantidad de carritos a mostrar por página.",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 10,
-                            "default": 10
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de carritos obtenida correctamente"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                },
-                "security": []
-            },
-            "post": {
-                "tags": [
-                    "Carritos"
-                ],
-                "summary": "Agregar producto al carrito",
-                "description": "Agrega un producto al carrito del usuario autenticado. Si el usuario no tiene un carrito, se crea automáticamente. Si el producto ya existe dentro del carrito, se suma la nueva cantidad al detalle existente; de lo contrario, se crea un nuevo detalle.",
-                "operationId": "c4adfab42904489dee1e53998d8bfd3a",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "producto_id",
-                                    "cantidad"
-                                ],
-                                "properties": {
-                                    "producto_id": {
-                                        "description": "ID del producto que se desea agregar al carrito",
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "cantidad": {
-                                        "description": "Cantidad del producto que se desea agregar",
-                                        "type": "integer",
-                                        "example": 2,
-                                        "minimum": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Producto agregado al carrito correctamente"
-                    },
-                    "401": {
-                        "description": "No autorizado - Token inválido o ausente"
-                    },
-                    "422": {
-                        "description": "Errores de validación"
-                    },
-                    "500": {
-                        "description": "Error interno al agregar el producto al carrito"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/carritos/{detalleCarrito}": {
-            "put": {
-                "tags": [
-                    "Carritos"
-                ],
-                "summary": "Actualizar cantidad del carrito",
-                "description": "Actualiza la cantidad de un producto dentro del carrito del usuario autenticado. El parámetro de ruta corresponde al ID del detalle del carrito.",
-                "operationId": "73e98c9504f7ac1a7c43c826e83166e3",
-                "parameters": [
-                    {
-                        "name": "detalleCarrito",
-                        "in": "path",
-                        "description": "ID del detalle del carrito que se desea actualizar",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "cantidad"
-                                ],
-                                "properties": {
-                                    "cantidad": {
-                                        "description": "Nueva cantidad del producto dentro del carrito",
-                                        "type": "integer",
-                                        "example": 5,
-                                        "minimum": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Cantidad del producto actualizada correctamente"
-                    },
-                    "401": {
-                        "description": "No autorizado - Token inválido o ausente"
-                    },
-                    "404": {
-                        "description": "El detalle del carrito no existe o no pertenece al usuario"
-                    },
-                    "422": {
-                        "description": "Errores de validación"
-                    },
-                    "500": {
-                        "description": "Error interno al actualizar la cantidad"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/categorias": {
             "get": {
                 "tags": [
@@ -385,83 +234,20 @@
                 ]
             }
         },
-        "/api/clientes": {
+        "/api/checkout/mis-pedidos": {
             "get": {
                 "tags": [
-                    "Clientes"
+                    "Checkout Web"
                 ],
-                "summary": "Listar clientes",
-                "description": "Obtiene una lista paginada de clientes.",
-                "operationId": "545f853b5f2b79dba8b151314762810b",
-                "parameters": [
-                    {
-                        "name": "search",
-                        "in": "query",
-                        "description": "Buscar por nombres, apellidos o documento",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Cantidad de registros por página",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 10
-                        }
-                    }
-                ],
+                "summary": "Listar los pedidos del cliente autenticado",
+                "description": "Obtiene el historial de compras (pedidos) del usuario logueado.",
+                "operationId": "8c18d62d0305db6cfe66980eff6c4f17",
                 "responses": {
                     "200": {
-                        "description": "Lista de clientes"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "Clientes"
-                ],
-                "summary": "Crear cliente",
-                "description": "Registra una persona como cliente.",
-                "operationId": "52166d137aa700e1d3c88b9a62af9771",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "persona_id",
-                                    "estado"
-                                ],
-                                "properties": {
-                                    "persona_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "estado": {
-                                        "type": "boolean",
-                                        "example": true
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Cliente creado correctamente"
+                        "description": "Lista de pedidos obtenida correctamente"
                     },
-                    "422": {
-                        "description": "Error de validación"
+                    "401": {
+                        "description": "No autorizado"
                     }
                 },
                 "security": [
@@ -471,43 +257,60 @@
                 ]
             }
         },
-        "/api/clientes/{id}": {
-            "put": {
+        "/api/checkout": {
+            "post": {
                 "tags": [
-                    "Clientes"
+                    "Checkout Web"
                 ],
-                "summary": "Actualizar cliente",
-                "description": "Actualiza la información de un cliente.",
-                "operationId": "a6dafbc8dbaa995301391d8935ce57bb",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID del cliente",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
+                "summary": "Procesar un nuevo pedido (Checkout)",
+                "description": "Genera una nueva venta en estado PENDIENTE desde el carrito del cliente de la tienda virtual. No genera comprobante ni transacción financiera aún.",
+                "operationId": "ea51cdcea2c3fda2327071ed2bb20819",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "persona_id",
-                                    "estado"
+                                    "direccion_envio_id",
+                                    "tipo_metodo_pago_id",
+                                    "costo_envio",
+                                    "detalles"
                                 ],
                                 "properties": {
-                                    "persona_id": {
+                                    "direccion_envio_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "estado": {
-                                        "type": "boolean",
-                                        "example": true
+                                    "tipo_metodo_pago_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "costo_envio": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 15
+                                    },
+                                    "detalles": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "producto_id",
+                                                "cantidad"
+                                            ],
+                                            "properties": {
+                                                "producto_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "type": "integer",
+                                                    "example": 2,
+                                                    "minimum": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "minItems": 1
                                     }
                                 },
                                 "type": "object"
@@ -517,10 +320,13 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Cliente actualizado correctamente"
+                        "description": "Pedido registrado correctamente"
                     },
                     "422": {
-                        "description": "Error de validación"
+                        "description": "Errores de validación o stock insuficiente"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -823,6 +629,278 @@
                 ]
             }
         },
+        "/api/direcciones-envio": {
+            "get": {
+                "tags": [
+                    "Direcciones de Envío"
+                ],
+                "summary": "Listar direcciones de envío",
+                "operationId": "5e1663a00f7e52518787417c7c95ca2c",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Buscar dirección por alias, dirección, urbanización, sector o referencia",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Cantidad de registros por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de direcciones de envío obtenida correctamente"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Direcciones de Envío"
+                ],
+                "summary": "Registrar dirección de envío",
+                "description": "Crea una nueva dirección de envío asociada a un usuario.",
+                "operationId": "59905d3f3b49fc70c110aef5ccb42765",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "usuario_id",
+                                    "direccion",
+                                    "es_direccion_principal",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "usuario_id": {
+                                        "description": "ID del usuario propietario de la dirección",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "alias_direccion": {
+                                        "description": "Alias o nombre identificador de la dirección",
+                                        "type": "string",
+                                        "example": "Casa",
+                                        "nullable": true
+                                    },
+                                    "urbanizacion": {
+                                        "description": "Urbanización",
+                                        "type": "string",
+                                        "example": "Urb. Las Palmas",
+                                        "nullable": true
+                                    },
+                                    "sector": {
+                                        "description": "Sector",
+                                        "type": "string",
+                                        "example": "Sector 2",
+                                        "nullable": true
+                                    },
+                                    "direccion": {
+                                        "description": "Dirección principal de envío",
+                                        "type": "string",
+                                        "example": "Av. Los Olivos 123"
+                                    },
+                                    "manzana": {
+                                        "description": "Manzana",
+                                        "type": "string",
+                                        "example": "A",
+                                        "nullable": true
+                                    },
+                                    "lote": {
+                                        "description": "Lote",
+                                        "type": "string",
+                                        "example": "15",
+                                        "nullable": true
+                                    },
+                                    "referencia": {
+                                        "description": "Referencia para facilitar la ubicación",
+                                        "type": "string",
+                                        "example": "Frente al parque principal",
+                                        "nullable": true
+                                    },
+                                    "es_direccion_principal": {
+                                        "description": "Indica si es la dirección principal: 1 sí, 0 no",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "estado": {
+                                        "description": "Estado de la dirección: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dirección de envío creada correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/direcciones-envio/{direccionEnvio}": {
+            "put": {
+                "tags": [
+                    "Direcciones de Envío"
+                ],
+                "summary": "Actualizar dirección de envío",
+                "description": "Actualiza una dirección de envío existente asociada a un usuario.",
+                "operationId": "16f07c5abbaa5ea6274ef4fbb0280ad5",
+                "parameters": [
+                    {
+                        "name": "direccionEnvio",
+                        "in": "path",
+                        "description": "ID de la dirección de envío",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "usuario_id",
+                                    "direccion",
+                                    "es_direccion_principal",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "usuario_id": {
+                                        "description": "ID del usuario propietario de la dirección",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "alias_direccion": {
+                                        "description": "Alias o nombre identificador de la dirección",
+                                        "type": "string",
+                                        "example": "Casa",
+                                        "nullable": true
+                                    },
+                                    "urbanizacion": {
+                                        "description": "Urbanización",
+                                        "type": "string",
+                                        "example": "Urb. Las Palmas",
+                                        "nullable": true
+                                    },
+                                    "sector": {
+                                        "description": "Sector",
+                                        "type": "string",
+                                        "example": "Sector 2",
+                                        "nullable": true
+                                    },
+                                    "direccion": {
+                                        "description": "Dirección principal de envío",
+                                        "type": "string",
+                                        "example": "Av. Los Olivos 123"
+                                    },
+                                    "manzana": {
+                                        "description": "Manzana",
+                                        "type": "string",
+                                        "example": "A",
+                                        "nullable": true
+                                    },
+                                    "lote": {
+                                        "description": "Lote",
+                                        "type": "string",
+                                        "example": "15",
+                                        "nullable": true
+                                    },
+                                    "referencia": {
+                                        "description": "Referencia para facilitar la ubicación",
+                                        "type": "string",
+                                        "example": "Frente al parque principal",
+                                        "nullable": true
+                                    },
+                                    "es_direccion_principal": {
+                                        "description": "Indica si es la dirección principal: 1 sí, 0 no",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "estado": {
+                                        "description": "Estado de la dirección: 1 activo, 0 inactivo",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dirección de envío actualizada correctamente"
+                    },
+                    "404": {
+                        "description": "Dirección de envío no encontrada"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/favoritos": {
             "get": {
                 "tags": [
@@ -1074,14 +1152,14 @@
                 "tags": [
                     "Personas"
                 ],
-                "summary": "Listar usuarios",
-                "description": "Obtiene una lista paginada de personas con usuario asociado. Requiere token JWT de un usuario con rol Administrador.",
+                "summary": "Listar personas (Proveedores/Entidades)",
+                "description": "Obtiene una lista paginada de personas. Permite buscar por nombres, apellidos o número de documento.",
                 "operationId": "90c467ad608bc37bd7820a478b635ac2",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Busca por nombres, apellidos, número de documento, correo o login del usuario.",
+                        "description": "Término de búsqueda (nombres, apellidos, número de documento).",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -1102,33 +1180,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Usuarios obtenidos correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {},
-                                "example": {
-                                    "usuarios": [],
-                                    "total": 0,
-                                    "pagination": {
-                                        "total": 0,
-                                        "current_page": 1,
-                                        "last_page": 1,
-                                        "per_page": 10,
-                                        "total_visible": 1,
-                                        "itemsPerPage": 10
-                                    }
-                                }
-                            }
-                        }
+                        "description": "Personas obtenidas correctamente"
                     },
                     "401": {
-                        "description": "Token JWT inválido o no enviado"
-                    },
-                    "403": {
-                        "description": "El usuario autenticado no tiene rol Administrador o no cuenta con el permiso listar_persona"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
+                        "description": "No autorizado"
                     }
                 },
                 "security": [
@@ -1141,8 +1196,8 @@
                 "tags": [
                     "Personas"
                 ],
-                "summary": "Registrar persona (tienda — crea también Usuario con rol Cliente)",
-                "description": "Registra una nueva persona junto con su usuario. El rol no es enviado por el cliente: cuando el registro proviene del ecommerce, el sistema asigna automáticamente el rol Cliente. Permite registrar los datos personales y las credenciales de acceso.",
+                "summary": "Registrar persona",
+                "description": "Crea el registro de una persona, con los nuevos campos de contacto y ubigeo.",
                 "operationId": "2f086ff8c55311b5938907cc196d5173",
                 "requestBody": {
                     "required": true,
@@ -1150,105 +1205,72 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "tipo_documento_identidad_id",
                                     "numero_documento",
-                                    "nombres",
-                                    "apellido_paterno",
-                                    "apellido_materno",
-                                    "numero_celular",
-                                    "fecha_nacimiento",
-                                    "genero_id",
-                                    "correo",
-                                    "login",
-                                    "password",
-                                    "password_confirmation"
+                                    "nombres"
                                 ],
                                 "properties": {
                                     "tipo_documento_identidad_id": {
-                                        "description": "ID del tipo de documento de identidad.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_documento": {
-                                        "description": "Número de documento de identidad.",
                                         "type": "string",
-                                        "example": "12345678",
+                                        "example": "20123456789",
                                         "maxLength": 20
                                     },
                                     "nombres": {
                                         "type": "string",
-                                        "example": "Juan Carlos",
+                                        "example": "Comercializadora SAC",
                                         "maxLength": 150
                                     },
                                     "apellido_paterno": {
                                         "type": "string",
                                         "example": "Pérez",
+                                        "nullable": true,
                                         "maxLength": 100
                                     },
                                     "apellido_materno": {
                                         "type": "string",
                                         "example": "García",
+                                        "nullable": true,
                                         "maxLength": 100
                                     },
                                     "numero_celular": {
                                         "type": "string",
-                                        "example": "987654321",
+                                        "example": "999888777",
+                                        "nullable": true,
                                         "maxLength": 20
                                     },
-                                    "provincia_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
+                                    "correo": {
+                                        "type": "string",
+                                        "example": "contacto@comercial.com",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "example": "Av. Las Palmeras 123",
+                                        "nullable": true,
+                                        "maxLength": 255
                                     },
                                     "departamento_id": {
                                         "type": "integer",
-                                        "example": 1,
+                                        "example": 15,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
+                                        "example": 1501,
                                         "nullable": true
                                     },
                                     "distrito_id": {
                                         "type": "integer",
-                                        "example": 1,
+                                        "example": 150101,
                                         "nullable": true
                                     },
-                                    "fecha_nacimiento": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "1995-05-20"
-                                    },
-                                    "genero_id": {
+                                    "estado": {
                                         "type": "integer",
                                         "example": 1
-                                    },
-                                    "profile_photo_path": {
-                                        "type": "string",
-                                        "example": "profiles/usuario.jpg",
-                                        "nullable": true
-                                    },
-                                    "correo": {
-                                        "description": "Correo electrónico utilizado para el acceso y comunicación.",
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "cliente@example.com",
-                                        "maxLength": 150
-                                    },
-                                    "login": {
-                                        "description": "Nombre de usuario para iniciar sesión.",
-                                        "type": "string",
-                                        "example": "juanperez",
-                                        "maxLength": 100
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "Password123",
-                                        "minLength": 8
-                                    },
-                                    "password_confirmation": {
-                                        "description": "Confirmación de la contraseña.",
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "Password123",
-                                        "minLength": 8
                                     }
                                 },
                                 "type": "object"
@@ -1258,31 +1280,62 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Usuario registrado correctamente"
+                        "description": "Persona registrada correctamente"
                     },
                     "422": {
                         "description": "Errores de validación"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
                     }
                 },
-                "security": []
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/personas/{id}": {
+            "get": {
+                "tags": [
+                    "Personas"
+                ],
+                "summary": "Obtener detalle de persona",
+                "description": "Obtiene la información completa de una persona por su ID.",
+                "operationId": "a9ce473f12514e4a1a8da5706ef3a698",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos obtenidos correctamente"
+                    },
+                    "404": {
+                        "description": "Persona no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "Personas"
                 ],
-                "summary": "Actualizar usuario y datos personales",
-                "description": "Actualiza los datos de una persona y su usuario asociado en una sola operación. Permite actualizar las credenciales de acceso y cambiar opcionalmente la contraseña. El rol del usuario no puede modificarse mediante este endpoint.",
+                "summary": "Actualizar persona",
+                "description": "Actualiza los datos personales y de ubicación de la persona.",
                 "operationId": "01988886b1ad660e830db7a0c81f670a",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID de la persona asociada al usuario que se desea actualizar.",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -1296,117 +1349,64 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "tipo_documento_identidad_id",
                                     "numero_documento",
-                                    "nombres",
-                                    "apellido_paterno",
-                                    "apellido_materno",
-                                    "numero_celular",
-                                    "fecha_nacimiento",
-                                    "genero_id",
-                                    "correo",
-                                    "login",
-                                    "estado"
+                                    "nombres"
                                 ],
                                 "properties": {
                                     "tipo_documento_identidad_id": {
-                                        "description": "ID del tipo de documento de identidad.",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "numero_documento": {
-                                        "description": "Número de documento de identidad. Debe ser único.",
                                         "type": "string",
-                                        "example": "12345678",
+                                        "example": "20123456789",
                                         "maxLength": 20
                                     },
                                     "nombres": {
                                         "type": "string",
-                                        "example": "Juan Carlos",
+                                        "example": "Comercializadora SAC",
                                         "maxLength": 150
                                     },
                                     "apellido_paterno": {
                                         "type": "string",
-                                        "example": "Pérez",
+                                        "nullable": true,
                                         "maxLength": 100
                                     },
                                     "apellido_materno": {
                                         "type": "string",
-                                        "example": "García",
+                                        "nullable": true,
                                         "maxLength": 100
                                     },
                                     "numero_celular": {
                                         "type": "string",
-                                        "example": "987654321",
+                                        "nullable": true,
                                         "maxLength": 20
                                     },
-                                    "provincia_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
+                                    "correo": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
                                     },
                                     "departamento_id": {
                                         "type": "integer",
-                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
                                         "nullable": true
                                     },
                                     "distrito_id": {
                                         "type": "integer",
-                                        "example": 1,
                                         "nullable": true
                                     },
-                                    "fecha_nacimiento": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "1995-05-20"
-                                    },
-                                    "genero_id": {
+                                    "estado": {
                                         "type": "integer",
                                         "example": 1
-                                    },
-                                    "profile_photo_path": {
-                                        "type": "string",
-                                        "example": "profiles/usuario.jpg",
-                                        "nullable": true,
-                                        "maxLength": 2048
-                                    },
-                                    "correo": {
-                                        "description": "Correo electrónico del usuario. Debe ser único.",
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "cliente@example.com",
-                                        "maxLength": 150
-                                    },
-                                    "login": {
-                                        "description": "Nombre de usuario para iniciar sesión. Debe ser único.",
-                                        "type": "string",
-                                        "example": "juanperez",
-                                        "maxLength": 100
-                                    },
-                                    "password": {
-                                        "description": "Nueva contraseña. Es opcional; si no se envía, se conserva la contraseña actual.",
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "NuevaPassword123",
-                                        "nullable": true,
-                                        "minLength": 8
-                                    },
-                                    "password_confirmation": {
-                                        "description": "Confirmación de la nueva contraseña.",
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "NuevaPassword123",
-                                        "nullable": true,
-                                        "minLength": 8
-                                    },
-                                    "estado": {
-                                        "description": "Estado de la persona y usuario: 1 activo, 0 inactivo.",
-                                        "type": "integer",
-                                        "example": 1,
-                                        "enum": [
-                                            0,
-                                            1
-                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -1416,16 +1416,45 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Usuario actualizado correctamente"
+                        "description": "Persona actualizada correctamente"
                     },
                     "422": {
                         "description": "Errores de validación"
                     },
                     "404": {
-                        "description": "Persona o usuario no encontrado"
+                        "description": "Persona no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Personas"
+                ],
+                "summary": "Eliminar persona",
+                "description": "Eliminación lógica (SoftDelete) de una persona.",
+                "operationId": "fbf9123f9be359bc2878e23157d26269",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Persona eliminada correctamente"
                     },
-                    "500": {
-                        "description": "Error interno del servidor"
+                    "404": {
+                        "description": "Persona no encontrada"
                     }
                 },
                 "security": [
@@ -1502,7 +1531,7 @@
                                     "estado"
                                 ],
                                 "properties": {
-                                    "tipo_marca_id": {
+                                    "marca_id": {
                                         "description": "ID del tipo de marca del producto",
                                         "type": "integer",
                                         "example": 1,
@@ -1696,7 +1725,7 @@
                                         "type": "string",
                                         "example": "PUT"
                                     },
-                                    "tipo_marca_id": {
+                                    "marca_id": {
                                         "description": "ID del tipo de marca del producto. Debe existir en tipo_marcas.",
                                         "type": "integer",
                                         "example": 1,
@@ -1980,13 +2009,13 @@
                     "Reseñas"
                 ],
                 "summary": "Listar reseñas",
-                "description": "Obtiene una lista paginada de reseñas. Permite buscar por comentario, nombre o slug del producto, correo del usuario y nombre o apellidos de la persona.",
+                "description": "Obtiene una lista paginada de reseñas. Permite buscar por comentario, nombre o slug del producto, correo del usuario.",
                 "operationId": "5c14bce70743682aff2935dd3cf2e014",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Término de búsqueda por comentario, nombre del producto, slug, correo del usuario, nombres o apellidos de la persona.",
+                        "description": "Término de búsqueda por comentario, nombre del producto, slug, correo del usuario.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -2270,13 +2299,13 @@
                     "Usuarios"
                 ],
                 "summary": "Listar usuarios",
-                "description": "Obtiene el listado paginado de usuarios junto con sus datos personales y rol.",
+                "description": "Obtiene el listado paginado de usuarios con sus datos completos y roles.",
                 "operationId": "bca879139983b5473f1496d463bf8898",
                 "parameters": [
                     {
                         "name": "search",
                         "in": "query",
-                        "description": "Buscar por nombres, apellidos, número de documento, correo o login.",
+                        "description": "Buscar por nombres, apellidos, documento o correo.",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -2317,7 +2346,7 @@
                     "Usuarios"
                 ],
                 "summary": "Registrar usuario",
-                "description": "Crea un nuevo usuario asociado a una persona y un rol.",
+                "description": "Crea un nuevo usuario con todos sus datos y un rol.",
                 "operationId": "09deba8429b4e840663c18afd37afc98",
                 "requestBody": {
                     "required": true,
@@ -2329,15 +2358,66 @@
                                     "estado"
                                 ],
                                 "properties": {
+                                    "tipo_documento_identidad_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "12345678",
+                                        "nullable": true
+                                    },
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "Juan Carlos",
+                                        "nullable": true
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "Perez",
+                                        "nullable": true
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "Gomez",
+                                        "nullable": true
+                                    },
+                                    "numero_celular": {
+                                        "type": "string",
+                                        "example": "999888777",
+                                        "nullable": true
+                                    },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 15,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
+                                        "example": 1501,
+                                        "nullable": true
+                                    },
+                                    "distrito_id": {
+                                        "type": "integer",
+                                        "example": 150101,
+                                        "nullable": true
+                                    },
+                                    "fecha_nacimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-15",
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "correo": {
                                         "type": "string",
                                         "format": "email",
                                         "example": "juan@correo.com",
-                                        "nullable": true
-                                    },
-                                    "login": {
-                                        "type": "string",
-                                        "example": "jperez",
                                         "nullable": true
                                     },
                                     "password": {
@@ -2345,18 +2425,21 @@
                                         "format": "password",
                                         "example": "123456"
                                     },
-                                    "persona_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
                                     "rol_id": {
                                         "type": "integer",
                                         "example": 2,
                                         "nullable": true
                                     },
+                                    "acepto_termino_condiciones": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
                                     "estado": {
-                                        "description": "Estado del usuario: 1 activo, 0 inactivo",
+                                        "description": "1 activo, 0 inactivo",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -2394,7 +2477,7 @@
                     "Usuarios"
                 ],
                 "summary": "Actualizar usuario",
-                "description": "Actualiza la información de un usuario, su persona asociada y su rol.",
+                "description": "Actualiza la información completa de un usuario y su rol.",
                 "operationId": "c855076ebb11a5ea23d90e21712f0c66",
                 "parameters": [
                     {
@@ -2417,15 +2500,66 @@
                                     "estado"
                                 ],
                                 "properties": {
+                                    "tipo_documento_identidad_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "12345678",
+                                        "nullable": true
+                                    },
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "Juan Carlos",
+                                        "nullable": true
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "Perez",
+                                        "nullable": true
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "Gomez",
+                                        "nullable": true
+                                    },
+                                    "numero_celular": {
+                                        "type": "string",
+                                        "example": "999888777",
+                                        "nullable": true
+                                    },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 15,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
+                                        "example": 1501,
+                                        "nullable": true
+                                    },
+                                    "distrito_id": {
+                                        "type": "integer",
+                                        "example": 150101,
+                                        "nullable": true
+                                    },
+                                    "fecha_nacimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-15",
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
                                     "correo": {
                                         "type": "string",
                                         "format": "email",
                                         "example": "juan@correo.com",
-                                        "nullable": true
-                                    },
-                                    "login": {
-                                        "type": "string",
-                                        "example": "jperez",
                                         "nullable": true
                                     },
                                     "password": {
@@ -2434,18 +2568,21 @@
                                         "example": "123456",
                                         "nullable": true
                                     },
-                                    "persona_id": {
-                                        "type": "integer",
-                                        "example": 1,
-                                        "nullable": true
-                                    },
                                     "rol_id": {
                                         "type": "integer",
                                         "example": 2,
                                         "nullable": true
                                     },
+                                    "acepto_termino_condiciones": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
                                     "estado": {
-                                        "description": "Estado del usuario: 1 activo, 0 inactivo",
+                                        "description": "1 activo, 0 inactivo",
                                         "type": "integer",
                                         "example": 1,
                                         "enum": [
@@ -2554,7 +2691,9 @@
                                     "costo_envio",
                                     "impuestos_igv",
                                     "estado",
-                                    "detalles"
+                                    "detalles[0][producto_id]",
+                                    "detalles[0][cantidad]",
+                                    "detalles[0][precio_unitario]"
                                 ],
                                 "properties": {
                                     "direccion_envio_id": {
@@ -2632,48 +2771,33 @@
                                         "format": "binary",
                                         "nullable": true
                                     },
-                                    "detalles": {
-                                        "description": "Lista de productos incluidos en la venta.",
-                                        "type": "array",
-                                        "items": {
-                                            "required": [
-                                                "producto_id",
-                                                "cantidad",
-                                                "precio_unitario"
-                                            ],
-                                            "properties": {
-                                                "producto_id": {
-                                                    "description": "ID del producto.",
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "cantidad": {
-                                                    "description": "Cantidad de unidades a vender.",
-                                                    "type": "integer",
-                                                    "example": 2,
-                                                    "minimum": 1
-                                                },
-                                                "precio_unitario": {
-                                                    "description": "Precio unitario del producto.",
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 150,
-                                                    "minimum": 0
-                                                },
-                                                "porcentaje_descuento": {
-                                                    "description": "Porcentaje de descuento aplicado al producto.",
-                                                    "type": "number",
-                                                    "format": "float",
-                                                    "example": 5,
-                                                    "nullable": true,
-                                                    "default": 0,
-                                                    "maximum": 100,
-                                                    "minimum": 0
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "minItems": 1
+                                    "detalles[0][producto_id]": {
+                                        "description": "ID del primer producto.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles[0][cantidad]": {
+                                        "description": "Cantidad de unidades a vender.",
+                                        "type": "integer",
+                                        "example": 2,
+                                        "minimum": 1
+                                    },
+                                    "detalles[0][precio_unitario]": {
+                                        "description": "Precio unitario del producto.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150,
+                                        "minimum": 0
+                                    },
+                                    "detalles[0][porcentaje_descuento]": {
+                                        "description": "Porcentaje de descuento aplicado al producto.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5,
+                                        "nullable": true,
+                                        "default": 0,
+                                        "maximum": 100,
+                                        "minimum": 0
                                     }
                                 },
                                 "type": "object"
@@ -2880,13 +3004,13 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "login",
+                                    "correo",
                                     "password"
                                 ],
                                 "properties": {
-                                    "login": {
+                                    "correo": {
                                         "type": "string",
-                                        "example": "admin"
+                                        "example": "admin@correo.com"
                                     },
                                     "password": {
                                         "type": "string",
@@ -2908,6 +3032,114 @@
                     },
                     "500": {
                         "description": "Error al procesar el token"
+                    }
+                }
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Registrar nuevo cliente",
+                "description": "Endpoint público para que los clientes se registren en la tienda virtual completando todos sus datos. Automáticamente asigna el rol de USUARIO EXTERNO y devuelve el token de sesión.",
+                "operationId": "d764dd091cc4494ae0baf360b03319f3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombres",
+                                    "apellido_paterno",
+                                    "correo",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "tipo_documento_identidad_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_documento": {
+                                        "type": "string",
+                                        "example": "12345678",
+                                        "nullable": true
+                                    },
+                                    "nombres": {
+                                        "type": "string",
+                                        "example": "Juan Carlos"
+                                    },
+                                    "apellido_paterno": {
+                                        "type": "string",
+                                        "example": "Perez"
+                                    },
+                                    "apellido_materno": {
+                                        "type": "string",
+                                        "example": "Gomez",
+                                        "nullable": true
+                                    },
+                                    "numero_celular": {
+                                        "type": "string",
+                                        "example": "999888777",
+                                        "nullable": true
+                                    },
+                                    "departamento_id": {
+                                        "type": "integer",
+                                        "example": 15,
+                                        "nullable": true
+                                    },
+                                    "provincia_id": {
+                                        "type": "integer",
+                                        "example": 1501,
+                                        "nullable": true
+                                    },
+                                    "distrito_id": {
+                                        "type": "integer",
+                                        "example": 150101,
+                                        "nullable": true
+                                    },
+                                    "fecha_nacimiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-15",
+                                        "nullable": true
+                                    },
+                                    "genero_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@correo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123456"
+                                    },
+                                    "acepto_termino_condiciones": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario registrado y autenticado correctamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
                     }
                 }
             }
@@ -2993,20 +3225,20 @@
     },
     "tags": [
         {
-            "name": "Carritos",
-            "description": "Carritos"
-        },
-        {
             "name": "Categorías",
             "description": "Categorías"
         },
         {
-            "name": "Clientes",
-            "description": "Clientes"
+            "name": "Checkout Web",
+            "description": "Checkout Web"
         },
         {
             "name": "Compras",
             "description": "Compras"
+        },
+        {
+            "name": "Direcciones de Envío",
+            "description": "Direcciones de Envío"
         },
         {
             "name": "Favoritos",

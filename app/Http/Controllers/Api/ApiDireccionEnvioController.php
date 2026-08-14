@@ -1,6 +1,6 @@
 <?php
 
-/* namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DireccionEnvio\DireccionEnvioCollection;
@@ -13,6 +13,15 @@ use OpenApi\Attributes as OA;
 
 class ApiDireccionEnvioController extends Controller
 {
+    public function __construct()
+        {
+            $this->middleware('jwt.auth');
+            $this->middleware('can:listar_direccionenvio')->only('index');
+            $this->middleware('can:registrar_direccionenvio')->only('store');
+            $this->middleware('can:editar_direccionenvio')->only('update');
+            /* $this->middleware('can:eliminar_direccionenvio')->only('destroy'); */
+        }
+
 
     #[OA\Get(
         path: '/api/direcciones-envio',
@@ -24,7 +33,7 @@ class ApiDireccionEnvioController extends Controller
                 name: 'search',
                 in: 'query',
                 required: false,
-                description: 'Buscar dirección por alias, dirección o referencia',
+                description: 'Buscar dirección por alias, dirección, urbanización, sector o referencia',
                 schema: new OA\Schema(
                     type: 'string'
                 )
@@ -60,9 +69,11 @@ class ApiDireccionEnvioController extends Controller
 
         $direcciones = DireccionEnvio::with(['usuario'])
             ->where(function ($q) use ($search) {
-                $q->where('alias_direccion', 'ilike', '%' . $search . '%')
-                    ->orWhere('direccion_linea_1', 'ilike', '%' . $search . '%')
-                    ->orWhere('referencia', 'ilike', '%' . $search . '%');
+                $q->where('alias_direccion', 'like', '%' . $search . '%')
+                    ->orWhere('urbanizacion', 'like', '%' . $search . '%')
+                    ->orWhere('sector', 'like', '%' . $search . '%')
+                    ->orWhere('direccion', 'like', '%' . $search . '%')
+                    ->orWhere('referencia', 'like', '%' . $search . '%');
             })
             ->orderBy('id', 'desc')
             ->paginate($per_page);
@@ -93,7 +104,7 @@ class ApiDireccionEnvioController extends Controller
             schema: new OA\Schema(
                 required: [
                     'usuario_id',
-                    'direccion_linea_1',
+                    'direccion',
                     'es_direccion_principal',
                     'estado'
                 ],
@@ -115,10 +126,42 @@ class ApiDireccionEnvioController extends Controller
                     ),
 
                     new OA\Property(
-                        property: 'direccion_linea_1',
+                        property: 'urbanizacion',
+                        type: 'string',
+                        nullable: true,
+                        example: 'Urb. Las Palmas',
+                        description: 'Urbanización'
+                    ),
+
+                    new OA\Property(
+                        property: 'sector',
+                        type: 'string',
+                        nullable: true,
+                        example: 'Sector 2',
+                        description: 'Sector'
+                    ),
+
+                    new OA\Property(
+                        property: 'direccion',
                         type: 'string',
                         example: 'Av. Los Olivos 123',
                         description: 'Dirección principal de envío'
+                    ),
+
+                    new OA\Property(
+                        property: 'manzana',
+                        type: 'string',
+                        nullable: true,
+                        example: 'A',
+                        description: 'Manzana'
+                    ),
+
+                    new OA\Property(
+                        property: 'lote',
+                        type: 'string',
+                        nullable: true,
+                        example: '15',
+                        description: 'Lote'
                     ),
 
                     new OA\Property(
@@ -175,19 +218,27 @@ class ApiDireccionEnvioController extends Controller
             $request->validate([
                 'usuario_id'             => ['required', 'integer', 'exists:usuarios,id'],
                 'alias_direccion'        => ['nullable', 'string', 'max:50'],
-                'direccion_linea_1'      => ['required', 'string', 'max:255'],
+                'urbanizacion'           => ['nullable', 'string', 'max:150'],
+                'sector'                 => ['nullable', 'string', 'max:100'],
+                'direccion'              => ['required', 'string', 'max:255'],
+                'manzana'                => ['nullable', 'string', 'max:20'],
+                'lote'                   => ['nullable', 'string', 'max:20'],
                 'referencia'             => ['nullable', 'string', 'max:255'],
                 'es_direccion_principal' => ['required', 'boolean'],
                 'estado'                 => ['required', 'boolean'],
             ], [
                 'usuario_id.required'              => 'El usuario es obligatorio.',
                 'usuario_id.exists'                => 'El usuario seleccionado no existe.',
-                'alias_direccion.max'              => 'El alias de la dirección no puede superar los 50 caracteres.',
-                'direccion_linea_1.required'        => 'La dirección es obligatoria.',
-                'direccion_linea_1.max'             => 'La dirección no puede superar los 255 caracteres.',
-                'referencia.max'                    => 'La referencia no puede superar los 255 caracteres.',
-                'es_direccion_principal.required'   => 'Debe indicar si la dirección es principal.',
-                'estado.required'                   => 'El estado es obligatorio.',
+                'alias_direccion.max'              => 'El alias no puede superar los 50 caracteres.',
+                'urbanizacion.max'                 => 'La urbanización no puede superar los 150 caracteres.',
+                'sector.max'                       => 'El sector no puede superar los 100 caracteres.',
+                'direccion.required'               => 'La dirección es obligatoria.',
+                'direccion.max'                    => 'La dirección no puede superar los 255 caracteres.',
+                'manzana.max'                      => 'La manzana no puede superar los 20 caracteres.',
+                'lote.max'                         => 'El lote no puede superar los 20 caracteres.',
+                'referencia.max'                   => 'La referencia no puede superar los 255 caracteres.',
+                'es_direccion_principal.required'  => 'Debe indicar si la dirección es principal.',
+                'estado.required'                  => 'El estado es obligatorio.',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -200,7 +251,11 @@ class ApiDireccionEnvioController extends Controller
 
         $direccion->usuario_id             = $request->usuario_id;
         $direccion->alias_direccion        = $request->alias_direccion;
-        $direccion->direccion_linea_1      = $request->direccion_linea_1;
+        $direccion->urbanizacion           = $request->urbanizacion;
+        $direccion->sector                 = $request->sector;
+        $direccion->direccion              = $request->direccion;
+        $direccion->manzana                = $request->manzana;
+        $direccion->lote                   = $request->lote;
         $direccion->referencia             = $request->referencia;
         $direccion->es_direccion_principal = $request->es_direccion_principal;
         $direccion->estado                 = $request->estado;
@@ -244,7 +299,7 @@ class ApiDireccionEnvioController extends Controller
                 schema: new OA\Schema(
                     required: [
                         'usuario_id',
-                        'direccion_linea_1',
+                        'direccion',
                         'es_direccion_principal',
                         'estado'
                     ],
@@ -266,10 +321,42 @@ class ApiDireccionEnvioController extends Controller
                         ),
 
                         new OA\Property(
-                            property: 'direccion_linea_1',
+                            property: 'urbanizacion',
+                            type: 'string',
+                            nullable: true,
+                            example: 'Urb. Las Palmas',
+                            description: 'Urbanización'
+                        ),
+
+                        new OA\Property(
+                            property: 'sector',
+                            type: 'string',
+                            nullable: true,
+                            example: 'Sector 2',
+                            description: 'Sector'
+                        ),
+
+                        new OA\Property(
+                            property: 'direccion',
                             type: 'string',
                             example: 'Av. Los Olivos 123',
                             description: 'Dirección principal de envío'
+                        ),
+
+                        new OA\Property(
+                            property: 'manzana',
+                            type: 'string',
+                            nullable: true,
+                            example: 'A',
+                            description: 'Manzana'
+                        ),
+
+                        new OA\Property(
+                            property: 'lote',
+                            type: 'string',
+                            nullable: true,
+                            example: '15',
+                            description: 'Lote'
                         ),
 
                         new OA\Property(
@@ -330,19 +417,27 @@ class ApiDireccionEnvioController extends Controller
             $request->validate([
                 'usuario_id'             => ['required', 'integer', 'exists:usuarios,id'],
                 'alias_direccion'        => ['nullable', 'string', 'max:50'],
-                'direccion_linea_1'      => ['required', 'string', 'max:255'],
+                'urbanizacion'           => ['nullable', 'string', 'max:150'],
+                'sector'                 => ['nullable', 'string', 'max:100'],
+                'direccion'              => ['required', 'string', 'max:255'],
+                'manzana'                => ['nullable', 'string', 'max:20'],
+                'lote'                   => ['nullable', 'string', 'max:20'],
                 'referencia'             => ['nullable', 'string', 'max:255'],
                 'es_direccion_principal' => ['required', 'boolean'],
                 'estado'                 => ['required', 'boolean'],
             ], [
                 'usuario_id.required'              => 'El usuario es obligatorio.',
                 'usuario_id.exists'                => 'El usuario seleccionado no existe.',
-                'alias_direccion.max'              => 'El alias de la dirección no puede superar los 50 caracteres.',
-                'direccion_linea_1.required'        => 'La dirección es obligatoria.',
-                'direccion_linea_1.max'             => 'La dirección no puede superar los 255 caracteres.',
-                'referencia.max'                    => 'La referencia no puede superar los 255 caracteres.',
-                'es_direccion_principal.required'   => 'Debe indicar si la dirección es principal.',
-                'estado.required'                   => 'El estado es obligatorio.',
+                'alias_direccion.max'              => 'El alias no puede superar los 50 caracteres.',
+                'urbanizacion.max'                 => 'La urbanización no puede superar los 150 caracteres.',
+                'sector.max'                       => 'El sector no puede superar los 100 caracteres.',
+                'direccion.required'               => 'La dirección es obligatoria.',
+                'direccion.max'                    => 'La dirección no puede superar los 255 caracteres.',
+                'manzana.max'                      => 'La manzana no puede superar los 20 caracteres.',
+                'lote.max'                         => 'El lote no puede superar los 20 caracteres.',
+                'referencia.max'                   => 'La referencia no puede superar los 255 caracteres.',
+                'es_direccion_principal.required'  => 'Debe indicar si la dirección es principal.',
+                'estado.required'                  => 'El estado es obligatorio.',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -351,11 +446,13 @@ class ApiDireccionEnvioController extends Controller
             ], 422);
         }
 
-        $direccionEnvio = $direccionEnvio;
-
         $direccionEnvio->usuario_id             = $request->usuario_id;
         $direccionEnvio->alias_direccion        = $request->alias_direccion;
-        $direccionEnvio->direccion_linea_1      = $request->direccion_linea_1;
+        $direccionEnvio->urbanizacion           = $request->urbanizacion;
+        $direccionEnvio->sector                 = $request->sector;
+        $direccionEnvio->direccion              = $request->direccion;
+        $direccionEnvio->manzana                = $request->manzana;
+        $direccionEnvio->lote                   = $request->lote;
         $direccionEnvio->referencia             = $request->referencia;
         $direccionEnvio->es_direccion_principal = $request->es_direccion_principal;
         $direccionEnvio->estado                 = $request->estado;
@@ -370,4 +467,3 @@ class ApiDireccionEnvioController extends Controller
         ], 200);
     }
 }
-  */

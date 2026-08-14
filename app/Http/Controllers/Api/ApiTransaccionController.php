@@ -137,7 +137,7 @@ class ApiTransaccionController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'transacciones' => TransaccionCollection::collection($transacciones),
+            'transacciones' => TransaccionCollection::make($transacciones),
             'total' => $transacciones->total(),
             'pagination' => [
                 'total' => $transacciones->total(),

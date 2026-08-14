@@ -14,17 +14,30 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             
             $table->id();
+            $table->unsignedBigInteger('tipo_documento_identidad_id')->nullable();
+            $table->foreign('tipo_documento_identidad_id')->references('id')->on('tipo_documento_identidades');
+            $table->string('numero_documento')->nullable();
+            $table->string('nombres')->nullable();
+            $table->string('apellido_paterno')->nullable();
+            $table->string('apellido_materno')->nullable();
+            $table->string('numero_celular')->nullable();
+            $table->unsignedBigInteger('departamento_id')->nullable();
+            $table->foreign('departamento_id')->references('id')->on('departamentos');
+            $table->unsignedBigInteger('provincia_id')->nullable();
+            $table->foreign('provincia_id')->references('id')->on('provincias');
+            $table->unsignedBigInteger('distrito_id')->nullable();
+            $table->foreign('distrito_id')->references('id')->on('distritos');
+            $table->date('fecha_nacimiento')->nullable();
+            $table->unsignedBigInteger('genero_id')->nullable();
+            $table->foreign('genero_id')->references('id')->on('generos');
+            $table->string('profile_photo_path', 2048)->nullable();            
             $table->string('correo')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('login')->nullable();
             $table->string('password');
             $table->rememberToken();
-
-            $table->unsignedBigInteger('persona_id')->nullable();
-            $table->foreign('persona_id')->references('id')->on('personas');
             $table->unsignedBigInteger('rol_id')->nullable();
             $table->foreign('rol_id')->references('id')->on('roles');
-
+            $table->boolean('acepto_termino_condiciones')->default(false);
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
@@ -46,9 +59,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('usuarios');

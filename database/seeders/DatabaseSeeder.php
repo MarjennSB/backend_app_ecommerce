@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
 
             PermissionsDemoSeeder::class,
             CategoriaSeeder::class,
-            TipoMarcaSeeder::class,
+            MarcaSeeder::class,
         ]);
     }
 }

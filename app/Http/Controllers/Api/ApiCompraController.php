@@ -75,8 +75,8 @@ class ApiCompraController extends Controller
         $per_page = $request->input('per_page', 10);
 
         $compras = Compra::with([
+            'usuario',
             'proveedor.persona',
-            'usuario.persona',
             'tipoDocumentoComprobante',
             'detalles.producto',
         ])
@@ -84,19 +84,12 @@ class ApiCompraController extends Controller
                 $query->where(function ($q) use ($search) {
 
                     $q->where('numero_comprobante', 'ilike', "%{$search}%")
-                        ->orWhereHas('proveedor.persona', function ($personaQuery) use ($search) {
-                            $personaQuery->where('nombres', 'ilike', "%{$search}%")
-                                ->orWhere('apellido_paterno', 'ilike', "%{$search}%")
-                                ->orWhere('numero_documento', 'ilike', "%{$search}%");
-                        })
                         ->orWhereHas('detalles.producto', function ($productoQuery) use ($search) {
-                            $productoQuery->where('nombre', 'ilike', "%{$search}%")
-                                ->orWhere('slug', 'ilike', "%{$search}%")
-                                ->orWhere('codigo_barras', 'ilike', "%{$search}%");
+                            $productoQuery->where('nombre', 'ilike', "%{$search}%");
                         });
                 });
             })
-            ->orderByDesc('id')
+            ->orderBy('numero_comprobante', 'desc')
             ->paginate($per_page);
 
         return response()->json([
@@ -365,8 +358,8 @@ class ApiCompraController extends Controller
                 'codigo' => 200,
                 'mensaje' => 'Compra registrada correctamente',
                 'compra' => CompraResource::make($compra->load([
+                    'usuario',
                     'proveedor.persona',
-                    'usuario.persona',
                     'tipoDocumentoComprobante',
                     'detalles.producto',
                 ])),
@@ -826,8 +819,8 @@ class ApiCompraController extends Controller
                 'codigo' => 200,
                 'mensaje' => 'Compra actualizada correctamente',
                 'compra' => CompraResource::make($compra->load([
+                    'usuario',
                     'proveedor.persona',
-                    'usuario.persona',
                     'tipoDocumentoComprobante',
                     'detalles.producto',
                 ])),

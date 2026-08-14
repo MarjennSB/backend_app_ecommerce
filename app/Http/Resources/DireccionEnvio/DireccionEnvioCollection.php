@@ -1,6 +1,6 @@
 <?php
 
-/* namespace App\Http\Resources\DireccionEnvio;
+namespace App\Http\Resources\DireccionEnvio;
 
 use App\Http\Resources\DireccionEnvio\DireccionEnvioResource;
 use Illuminate\Http\Request;
@@ -14,4 +14,4 @@ class DireccionEnvioCollection extends ResourceCollection
             'data' => DireccionEnvioResource::collection($this->collection),
         ];
     }
-} */
+}

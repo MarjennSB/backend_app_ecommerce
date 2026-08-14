@@ -13,31 +13,21 @@ return new class extends Migration
     {
         Schema::create('comprobante_ventas', function (Blueprint $table) {
             $table->id();
-            
-            // unique() porque la relación es de 1 a 1 (una venta = un comprobante)
             $table->unsignedBigInteger('venta_id')->unique()->nullable();
             $table->foreign('venta_id')->references('id')->on('ventas');
-            
-            // Usando el nombre de tabla que mostraste en tus intentos anteriores
             $table->unsignedBigInteger('tipo_documento_comprobante_id')->nullable();
             $table->foreign('tipo_documento_comprobante_id')->references('id')->on('tipo_documento_comprobantes');
-            
             $table->string('serie_comprobante', 10)->nullable();
             $table->string('numero_comprobante', 20)->nullable();
             $table->string('ruta_pdf_xml', 500)->nullable();
-            
             $table->string('estado_comprobante', 30)->default('EMITIDO');
             $table->timestamp('fecha_emision')->nullable();
-            
             $table->integer('estado')->default(1)->comment('0=inactivo, 1=activo');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('comprobante_ventas');

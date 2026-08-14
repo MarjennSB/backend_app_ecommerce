@@ -26,7 +26,7 @@ class ApiResenaController extends Controller
     #[OA\Get(
         path: '/api/resenas',
         summary: 'Listar reseñas',
-        description: 'Obtiene una lista paginada de reseñas. Permite buscar por comentario, nombre o slug del producto, correo del usuario y nombre o apellidos de la persona.',
+        description: 'Obtiene una lista paginada de reseñas. Permite buscar por comentario, nombre o slug del producto, correo del usuario.',
         tags: ['Reseñas'],
         security: [['bearerAuth' => []]],
         parameters: [
@@ -34,7 +34,7 @@ class ApiResenaController extends Controller
                 name: 'search',
                 in: 'query',
                 required: false,
-                description: 'Término de búsqueda por comentario, nombre del producto, slug, correo del usuario, nombres o apellidos de la persona.',
+                description: 'Término de búsqueda por comentario, nombre del producto, slug, correo del usuario.',
                 schema: new OA\Schema(
                     type: 'string',
                     example: 'laptop'
@@ -70,7 +70,7 @@ class ApiResenaController extends Controller
         $per_page = $request->input('per_page', 10);
 
         $resenas = Resena::with([
-            'usuario.persona',
+            'usuario',
             'producto',
         ])
             ->when($search, function ($query) use ($search) {
@@ -87,12 +87,7 @@ class ApiResenaController extends Controller
 
                         // Buscar por usuario
                         ->orWhereHas('usuario', function ($usuario) use ($search) {
-                            $usuario->where('correo', 'ilike', "%{$search}%")
-                                ->orWhereHas('persona', function ($persona) use ($search) {
-                                    $persona->where('nombres', 'ilike', "%{$search}%")
-                                        ->orWhere('apellido_paterno', 'ilike', "%{$search}%")
-                                        ->orWhere('apellido_materno', 'ilike', "%{$search}%");
-                                });
+                            $usuario->where('correo', 'ilike', "%{$search}%");
                         });
                 });
             })
@@ -240,7 +235,7 @@ class ApiResenaController extends Controller
                 'mensaje' => 'Reseña creada correctamente',
                 'resena' => ResenaResource::make(
                     $resena->load([
-                        'usuario.persona',
+                        'usuario',
                         'producto',
                     ])
                 ),
@@ -397,7 +392,7 @@ class ApiResenaController extends Controller
                 'mensaje' => 'Reseña actualizada correctamente',
                 'resena' => ResenaResource::make(
                     $resena->load([
-                        'usuario.persona',
+                        'usuario',
                         'producto',
                     ])
                 ),
